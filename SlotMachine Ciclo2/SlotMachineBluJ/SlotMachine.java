@@ -222,7 +222,6 @@ public class SlotMachine
             return;
         }
 
-
         ok = wheels[wheel - 1].spin();
     }
     
