@@ -567,7 +567,8 @@ public class SlotMachineTest
     
     
     // MiniCycle 5
-        /**
+    
+    /**
      * Verifies that the slot machine can be created
      * with its visual representation.
      */

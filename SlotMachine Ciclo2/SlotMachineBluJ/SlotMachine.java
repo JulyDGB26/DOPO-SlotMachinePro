@@ -237,19 +237,20 @@ public class SlotMachine
             ok = false;
             return;
         }
-
+    
         if(steps <= 0){
             ok = false;
             return;
         }
-
+    
         boolean result = false;
-
+    
         for(int i = 0; i < steps; i++){
-            if(wheels[wheel - 1].spin()) result = true;
-            if(visible) Canvas.getCanvas().wait(150);
+            
+            if(wheels[wheel - 1].spin())
+            {result = true;}
         }
-
+    
         ok = result;
     }
 

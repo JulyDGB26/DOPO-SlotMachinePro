@@ -8,7 +8,7 @@
  */
 public class Wheel
 {
-    private String[] symbols;
+    private Symbol[] symbols;
     private int currentSymbol;
     private Circle    circle;
     private Rectangle slotFrame;
@@ -27,7 +27,7 @@ public class Wheel
      */
     public Wheel(int slotIndex)
     {
-        symbols = new String[0];
+        symbols = new Symbol[0];
         currentSymbol = 0;
         locked  = false;
         visible = false;
@@ -62,55 +62,111 @@ public class Wheel
 
     /**
      * Adds a new symbol (color) to this wheel.
+     *
+     * @param color visual color of the new symbol
+     * @return true if the symbol was added, false otherwise
      */
     public boolean addSymbol(String color)
     {
-        if(contains(color)){ return false; }
-        String[] n = new String[symbols.length + 1];
-        for(int i = 0; i < symbols.length; i++){ n[i] = symbols[i]; }
-        n[symbols.length] = color;
+        if(contains(color))
+        {
+            return false;
+        }
+    
+        Symbol[] n = new Symbol[symbols.length + 1];
+    
+        for(int i = 0; i < symbols.length; i++)
+        {
+            n[i] = symbols[i];
+        }
+    
+        n[symbols.length] = new Symbol(color);
+    
         symbols = n;
+    
         return true;
     }
 
     /**
      * Removes the first occurrence of a symbol from this wheel.
+     *
+     * @param symbol color of the symbol to remove
+     * @return true if the symbol was removed, false otherwise
      */
     public boolean delSymbol(String symbol)
     {
         int pos = find(symbol);
-        if(pos == -1){ return false; }
-        String[] n = new String[symbols.length - 1];
-        for(int i = 0; i < pos; i++){ n[i] = symbols[i]; }
-        for(int i = pos; i < n.length; i++){ n[i] = symbols[i + 1]; }
+    
+        if(pos == -1){
+            return false;
+        }
+    
+        Symbol[] n = new Symbol[symbols.length - 1];
+    
+        for(int i = 0; i < pos; i++){
+            n[i] = symbols[i];
+        }
+    
+        for(int i = pos; i < n.length; i++){
+            n[i] = symbols[i + 1];
+        }
+    
         symbols = n;
-        if(currentSymbol >= symbols.length){ currentSymbol = 0; }
+    
+        if(currentSymbol >= symbols.length){
+            currentSymbol = 0;
+        }
+    
         return true;
     }
 
     /**
      * Positions the visible symbol to the given color.
+     *
+     * @param symbol color to display
+     * @return true if the symbol exists
      */
     public boolean placeSymbol(String symbol)
     {
         int pos = find(symbol);
-        if(pos == -1){ return false; }
+        if(pos == -1){
+            return false;
+        }
+        
         currentSymbol = pos;
-        if(visible) circle.changeColor(symbols[currentSymbol]);
+        
+        if(visible){
+            circle.changeColor(symbols[currentSymbol].getColor());
+        }
+    
         return true;
     }
 
     // ── spin ─────────────────────────────────────────────────────────────────
 
     /**
-     * Advances the wheel one position. Returns false if locked or empty.
+     * Advances the wheel one position.
+     * Returns false if locked or empty.
+     *
+     * @return true if the wheel moved
      */
     public boolean spin()
     {
-        if(symbols.length == 0 || locked){ return false; }
+        if(symbols.length == 0 || locked){
+            return false;
+        }
+    
         currentSymbol++;
-        if(currentSymbol >= symbols.length){ currentSymbol = 0; }
-        if(visible) circle.changeColor(symbols[currentSymbol]);
+    
+        if(currentSymbol >= symbols.length){
+            currentSymbol = 0;
+        }
+    
+        if(visible){
+            circle.changeColor(symbols[currentSymbol].getColor());
+            Canvas.getCanvas().wait(150);
+        }
+    
         return true;
     }
 
@@ -129,13 +185,16 @@ public class Wheel
     }
 
     /**
-     * Unlocks the wheel. Visual: circle restores symbol color, lock bar turns green.
+     * Unlocks the wheel.
+     * Visual: restores symbol color and green lock bar.
      */
     public void unlock()
     {
         locked = false;
+    
         if(visible){
-            String color = (symbols.length > 0) ? symbols[currentSymbol] : "white";
+            String color = (symbols.length > 0) ? symbols[currentSymbol].getColor():"white";
+    
             circle.changeColor(color);
             lockBar.changeColor("green");
         }
@@ -146,27 +205,52 @@ public class Wheel
 
     // ── query ─────────────────────────────────────────────────────────────────
 
-    /** Returns the currently visible symbol color, or null if the wheel is empty. */
+    /**
+     * Returns the currently visible symbol color,
+     * or null if the wheel is empty.
+     *
+     * @return current symbol color
+     */
     public String configuration()
     {
-        if(symbols.length == 0){ return null; }
-        return symbols[currentSymbol];
+        if(symbols.length == 0)
+        {
+            return null;
+        }
+    
+        return symbols[currentSymbol].getColor();
     }
-
-    /** Returns all symbols in this wheel. */
-    public String[] symbols(){ return symbols; }
+    
+    /**
+     * Returns all symbol colors contained in this wheel.
+     *
+     * @return array with symbol colors
+     */
+    public String[] symbols()
+    {
+        String[] result = new String[symbols.length];
+    
+        for(int i = 0; i < symbols.length; i++){
+            result[i] = symbols[i].getColor();
+        }
+    
+        return result;
+    }
 
     // ── visibility ────────────────────────────────────────────────────────────
 
     /**
-     * Shows all visual elements of this wheel on the canvas.
+     * Shows all visual elements of this wheel.
      */
     public void makeVisible()
     {
         visible = true;
+    
         slotFrame.makeVisible();
         lockBar.makeVisible();
-        String color = (symbols.length > 0) ? symbols[currentSymbol] : "white";
+    
+        String color = (symbols.length > 0) ? symbols[currentSymbol].getColor(): "white";
+    
         circle.changeColor(color);
         circle.makeVisible();
     }
@@ -186,11 +270,16 @@ public class Wheel
 
     private boolean contains(String color){ return find(color) != -1; }
 
-    private int find(String symbol)
+    private int find(String color)
     {
-        for(int i = 0; i < symbols.length; i++){
-            if(symbols[i].equals(symbol)){ return i; }
+        for(int i = 0; i < symbols.length; i++)
+        {
+            if(symbols[i].getColor().equals(color))
+            {
+                return i;
+            }
         }
+    
         return -1;
     }
 }
