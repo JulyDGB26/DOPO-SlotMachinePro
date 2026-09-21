@@ -6,17 +6,28 @@ import org.junit.Test;
  */
 public class SlotMachineContestTest
 {
+    
+    
+    
+    
+    
+    
+    
     /**
-     * Verifies that SlotMachine(int n) creates
-     * a machine with the requested number of wheels.
+     * Verifica que SlotMachine(n) crea exactamente n ruedas, cada una
+     * con n símbolos montados
      */
     @Test
-    public void testDynamicMachineCreation()
-    {
-        SlotMachine machine = new SlotMachine(5);
-
-        assertEquals(5, machine.wheels());
+    public void accordingCjMcShouldCreateEqualWheelsAndSymbolsPerWheel() {
+        SlotMachine sm = new SlotMachine(5);
+        assertEquals(5, sm.configuration().length);
+        assertEquals(25, sm.symbols().length);
     }
+    
+    
+    
+    
+    
 
     /**
      * Verifies that every wheel contains
@@ -102,8 +113,6 @@ public class SlotMachineContestTest
         assertNotNull(solution);
     }
     
-    
-    
     /**
      * Verifies that solve returns
      * the expected number of movements.
@@ -155,19 +164,25 @@ public class SlotMachineContestTest
     
     
     
+    
+    
     /**
      * Verifies that simulate can be executed
      * without generating errors.
      */
     @Test
-    public void testSimulateExecution()
+    public void accordingCaPpShouldRunSimulationWithoutErrors()
     {
+        int n = 3;
         SlotMachineContest contest = new SlotMachineContest();
-
-        contest.simulate(3);
-
-        assertTrue(true);
+        contest.simulate(n);
     }
+    
+    
+    
+    
+    
+    
     
     /**
      * Verifies that an invalid contest size
