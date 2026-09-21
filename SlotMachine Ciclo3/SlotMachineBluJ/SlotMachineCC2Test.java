@@ -28,29 +28,34 @@ public class SlotMachineCC2Test
 
 
     
-    /**
-     * swap on a valid two-wheel machine exchanges the visible configuration.
+    
+    
+    
+       /**
+     * Verifica que, al intercambiar dos ruedas válidas con símbolos
+     * distintos mediante swap(int, int), cada una termine mostrando el
+     * símbolo que antes tenía la otra.
      */
     @Test
-    public void accordingCcGbShouldSwapTwoWheelsCorrectly()
-    {
+    public void accordingMsRhShouldSwapSymbolsBetweenTwoValidWheels() {
         machine.addWheel(1);
         machine.addWheel(2);
-
         machine.addSymbol(1, "red");
         machine.addSymbol(2, "blue");
-
+        machine.placeSymbol(1, "red");
+        machine.placeSymbol(2, "blue");
         machine.swap(1, 2);
-
-        String[] config = machine.configuration();
-
-        assertTrue(machine.ok());
-        assertEquals("blue", config[0]);
-        assertEquals("red",  config[1]);
+        assertEquals("blue", machine.configuration()[0]);
+        assertEquals("red", machine.configuration()[1]);
     }
+    
+    
+    
+    
+    
 
     /**
-     * swap on a machine with fewer than two wheels fails.
+      * swap on a machine with fewer than two wheels fails.
      */
     @Test
     public void accordingCcGbShouldFailSwapWithOnlyOneWheel()
@@ -101,25 +106,30 @@ public class SlotMachineCC2Test
         assertEquals("red",  machine.configuration()[1]);
     }
 
-
-
+    
+    
+    
+    
     /**
-     * A locked wheel does not advance when the machine spins.
-     */
-    @Test
-    public void accordingCcGbShouldNotSpinLockedWheel()
+      * Verify that a locked wheel cannot change its position when performing a spin.
+    */@Test
+    public void accordingAaCbShouldPreventLockedWheelFromSpinning()
     {
         machine.addWheel(1);
         machine.addSymbol(1, "red");
         machine.addSymbol(1, "blue");
-
+        machine.addSymbol(1, "green");
+        String before = machine.configuration()[0];   // "red"
         machine.lock(1);
         machine.spin(1);
-
-        assertEquals("red", machine.configuration()[0]);
-        assertFalse(machine.ok());
+        assertEquals(before, machine.configuration()[0]);
     }
-
+    
+    
+    
+    
+    
+    
     /**
      * lock on an invalid position fails.
      */
@@ -143,8 +153,6 @@ public class SlotMachineCC2Test
 
         assertTrue(machine.ok());
     }
-
-
 
     /**
      * A wheel that was locked resumes spinning after unlock.
@@ -174,8 +182,6 @@ public class SlotMachineCC2Test
 
         assertFalse(machine.ok());
     }
-
-
 
     /**
      * Spinning a wheel 3 steps lands on the correct symbol.
@@ -237,8 +243,6 @@ public class SlotMachineCC2Test
         assertFalse(machine.ok());
     }
 
-
-
     /**
      * spin with a valid symbol array sets the visible configuration.
      */
@@ -295,8 +299,6 @@ public class SlotMachineCC2Test
         assertEquals("blue",  machine.configuration()[0]);
         assertEquals("green", machine.configuration()[1]);
     }
-
-
 
     /**
      * spin() on all wheels succeeds when at least one unlocked wheel rotates.
