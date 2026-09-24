@@ -7,7 +7,7 @@ import org.junit.jupiter.api.Test;
  * Test class for Cycle 2 methods of SlotMachine.
  * All tests run in invisible mode.
  *
- * @author Julian Gomez Boada - Julian Carrero Carranza
+ * @author Julian Gomez Boada
  * 
  */
 public class SlotMachineCC2Test
@@ -28,37 +28,32 @@ public class SlotMachineCC2Test
 
 
     
-    
-    
-    
-       /**
-     * Verifica que, al intercambiar dos ruedas válidas con símbolos
-     * distintos mediante swap(int, int), cada una termine mostrando el
-     * símbolo que antes tenía la otra.
+    /**
+     * swap on a valid two-wheel machine exchanges the visible configuration.
      */
     @Test
-    public void accordingMsRhShouldSwapSymbolsBetweenTwoValidWheels() {
+    public void shouldSwapTwoWheelsCorrectly()
+    {
         machine.addWheel(1);
         machine.addWheel(2);
+
         machine.addSymbol(1, "red");
         machine.addSymbol(2, "blue");
-        machine.placeSymbol(1, "red");
-        machine.placeSymbol(2, "blue");
+
         machine.swap(1, 2);
-        assertEquals("blue", machine.configuration()[0]);
-        assertEquals("red", machine.configuration()[1]);
+
+        String[] config = machine.configuration();
+
+        assertTrue(machine.ok());
+        assertEquals("blue", config[0]);
+        assertEquals("red",  config[1]);
     }
-    
-    
-    
-    
-    
 
     /**
-      * swap on a machine with fewer than two wheels fails.
+     * swap on a machine with fewer than two wheels fails.
      */
     @Test
-    public void accordingCcGbShouldFailSwapWithOnlyOneWheel()
+    public void shouldFailSwapWithOnlyOneWheel()
     {
         machine.addWheel(1);
         machine.addSymbol(1, "red");
@@ -72,7 +67,7 @@ public class SlotMachineCC2Test
      * swap with equal positions is a valid no-op.
      */
     @Test
-    public void accordingCcGbShouldSwapSamePositionAsNoOp()
+    public void shouldSwapSamePositionAsNoOp()
     {
         machine.addWheel(1);
         machine.addWheel(2);
@@ -91,7 +86,7 @@ public class SlotMachineCC2Test
      * swap with out-of-range positions clamps and still swaps.
      */
     @Test
-    public void accordingCcGbShouldSwapWithClampedPositions()
+    public void shouldSwapWithClampedPositions()
     {
         machine.addWheel(1);
         machine.addWheel(2);
@@ -106,35 +101,30 @@ public class SlotMachineCC2Test
         assertEquals("red",  machine.configuration()[1]);
     }
 
-    
-    
-    
-    
+
+
     /**
-      * Verify that a locked wheel cannot change its position when performing a spin.
-    */@Test
-    public void accordingAaCbShouldPreventLockedWheelFromSpinning()
+     * A locked wheel does not advance when the machine spins.
+     */
+    @Test
+    public void accordingCcGbShouldNotSpinLockedWheel()
     {
         machine.addWheel(1);
         machine.addSymbol(1, "red");
         machine.addSymbol(1, "blue");
-        machine.addSymbol(1, "green");
-        String before = machine.configuration()[0];   // "red"
+
         machine.lock(1);
         machine.spin(1);
-        assertEquals(before, machine.configuration()[0]);
+
+        assertEquals("red", machine.configuration()[0]);
+        assertFalse(machine.ok());
     }
-    
-    
-    
-    
-    
-    
+
     /**
      * lock on an invalid position fails.
      */
     @Test
-    public void accordingCcGbShouldFailLockOnInvalidPosition()
+    public void shouldFailLockOnInvalidPosition()
     {
         machine.lock(5);
 
@@ -145,7 +135,7 @@ public class SlotMachineCC2Test
      * lock on a valid position succeeds.
      */
     @Test
-    public void accordingCcGbShouldLockValidWheel()
+    public void shouldLockValidWheel()
     {
         machine.addWheel(1);
 
@@ -153,6 +143,8 @@ public class SlotMachineCC2Test
 
         assertTrue(machine.ok());
     }
+
+
 
     /**
      * A wheel that was locked resumes spinning after unlock.
@@ -176,18 +168,20 @@ public class SlotMachineCC2Test
      * unlock on an invalid position fails.
      */
     @Test
-    public void accordingCcGbShouldFailUnlockOnInvalidPosition()
+    public void shouldFailUnlockOnInvalidPosition()
     {
         machine.unlock(3);
 
         assertFalse(machine.ok());
     }
 
+
+
     /**
      * Spinning a wheel 3 steps lands on the correct symbol.
      */
     @Test
-    public void accordingCcGbShouldSpinWheelCorrectNumberOfSteps()
+    public void shouldSpinWheelCorrectNumberOfSteps()
     {
         machine.addWheel(1);
         machine.addSymbol(1, "red");
@@ -205,7 +199,7 @@ public class SlotMachineCC2Test
      * Spinning a wheel by its total symbol count returns to the initial symbol.
      */
     @Test
-    public void accordingCcGbShouldReturnToStartAfterFullRotation()
+    public void shouldReturnToStartAfterFullRotation()
     {
         machine.addWheel(1);
         machine.addSymbol(1, "red");
@@ -222,7 +216,7 @@ public class SlotMachineCC2Test
      * Spinning with steps = 0 fails.
      */
     @Test
-    public void accordingCcGbShouldFailSpinWithZeroSteps()
+    public void shouldFailSpinWithZeroSteps()
     {
         machine.addWheel(1);
         machine.addSymbol(1, "red");
@@ -236,18 +230,20 @@ public class SlotMachineCC2Test
      * Spinning an invalid wheel position fails.
      */
     @Test
-    public void accordingCcGbShouldFailSpinStepsOnInvalidWheel()
+    public void shouldFailSpinStepsOnInvalidWheel()
     {
         machine.spin(5, 2);
 
         assertFalse(machine.ok());
     }
 
+
+
     /**
      * spin with a valid symbol array sets the visible configuration.
      */
     @Test
-    public void accordingCcGbShouldSetConfigurationWithValidSymbols()
+    public void shouldSetConfigurationWithValidSymbols()
     {
         machine.addWheel(1);
         machine.addWheel(2);
@@ -268,7 +264,7 @@ public class SlotMachineCC2Test
      * spin with a non-existing symbol in a wheel fails.
      */
     @Test
-    public void accordingCcGbShouldFailSpinSetWithNonExistingSymbol()
+    public void shouldFailSpinSetWithNonExistingSymbol()
     {
         machine.addWheel(1);
         machine.addSymbol(1, "red");
@@ -283,7 +279,7 @@ public class SlotMachineCC2Test
      * spin with an array shorter than the wheel count applies to the first N wheels.
      */
     @Test
-    public void accordingCcGbShouldApplyPartialConfigurationArray()
+    public void shouldApplyPartialConfigurationArray()
     {
         machine.addWheel(1);
         machine.addWheel(2);
@@ -300,11 +296,12 @@ public class SlotMachineCC2Test
         assertEquals("green", machine.configuration()[1]);
     }
 
+
     /**
      * spin() on all wheels succeeds when at least one unlocked wheel rotates.
      */
     @Test
-    public void accordingCcGbShouldSpinAllWithSomeLockedWheels()
+    public void shouldSpinAllWithSomeLockedWheels()
     {
         machine.addWheel(1);
         machine.addWheel(2);
@@ -320,5 +317,102 @@ public class SlotMachineCC2Test
         assertTrue(machine.ok());
         assertEquals("red",    machine.configuration()[0]);
         assertEquals("yellow", machine.configuration()[1]);
+    }
+    
+    
+    
+    
+    // WIKI MOODLE SlotMachineCC2Test
+    /**
+     * Verifies that swapping wheels does not create or remove wheels.
+     */
+    @Test
+    public void accordingAsGaShouldKeepTheSameNumberOfWheelsAfterASwap()
+    {
+        machine.addWheel(1);
+        machine.addWheel(2);
+    
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "blue");
+    
+        machine.swap(1, 2);
+    
+        assertTrue(machine.ok());
+        assertEquals(2, machine.configuration().length);
+    }
+    
+    /**
+     * Verifies that deleting a symbol that does not exist
+     * fails without removing existing symbols.
+     */
+    @Test
+    public void accordingCxLxShouldNotDeleteMissingSymbol()
+    {
+        machine.addWheel(1);
+        machine.addSymbol(1, "red");
+    
+        machine.delSymbol("blue");
+    
+        assertFalse(machine.ok());
+        assertEquals(1, machine.symbols().length);
+    }
+    
+    /**
+     * Verifies that spin(String[]) does not partially modify
+     * the machine when one requested symbol does not exist.
+     */
+    @Test
+    public void accordingMrSeShouldRejectSpinSetSymbolsWhenColorMissing()
+    {
+        machine.addWheel(1);
+        machine.addWheel(2);
+    
+        machine.addSymbol(1, "red");
+        machine.addSymbol(2, "green");
+    
+        String[] before = machine.configuration();
+    
+        machine.spin(new String[]{"red", "purple"});
+    
+        assertFalse(machine.ok());
+        assertArrayEquals(before, machine.configuration());
+    }
+    
+    /**
+     * Verifies that adding and deleting wheels
+     * maintains the expected wheel count.
+     */
+    @Test
+    public void accordingDrRmShouldKeepCorrectWheelCountAfterAddAndDelete()
+    {
+        machine.addWheel(1);
+        machine.addWheel(2);
+        machine.addWheel(3);
+    
+        machine.delWheel(2);
+    
+        assertEquals(2, machine.configuration().length);
+    }
+    
+    /**
+     * Verifies that distinctSymbols counts different visible colors.
+     */
+    @Test
+    public void accordingCcIcshouldCalculateDistinctSymbolsCorrectly()
+    {
+        machine.addWheel(1);
+        machine.addWheel(2);
+        machine.addWheel(3);
+    
+        machine.addSymbol(1,"red");
+        machine.addSymbol(2,"red");
+        machine.addSymbol(3,"green");
+    
+        machine.placeSymbol(1,"red");
+        machine.placeSymbol(2,"red");
+        machine.placeSymbol(3,"green");
+    
+        assertEquals(2, machine.distinctSymbols());
+        assertTrue(machine.ok());
     }
 }
