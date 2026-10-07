@@ -1,22 +1,21 @@
 import static org.junit.Assert.*;
 import org.junit.Test;
 
-
 /**
  * Acceptance tests for Cycle 3.
  *
- * These tests validate complete user scenarios
- * integrating the new ICPC contest functionality:
+ * These tests validate complete contest scenarios
+ * integrating the new ICPC functionality:
  *
  * - Dynamic machine creation
  * - SlotMachineContest
  * - solve(n)
- * - simulate(n)
+ * - Generated contest movements
+ * - SlotMachine as a testing tool
  *
- * SlotMachine is only used as:
- *
- * - testing tool in solve
- * - simulator in simulate
+ * The acceptance scenarios run without visual
+ * representation and validate concrete results
+ * through the public SlotMachine tool.
  */
 public class SlotMachineC3AcceptanceTest
 {
@@ -24,95 +23,83 @@ public class SlotMachineC3AcceptanceTest
 
     /**
      * Acceptance Scenario 1:
+     * 
+     * Can a user/solver complete the resolution history?
      *
-     * The solver generates the necessary movements
-     * to solve a contest machine.
+     * The solver generates a solution that takes a contest
+     * configuration to the jackpot state.
      *
      * User flow:
      *
      * 1. Create contest solver.
-     * 2. Prepare a contest machine.
-     * 3. Generate solution.
-     * 4. Apply movements.
-     * 5. Verify final state.
+     * 2. Define a valid contest size.
+     * 3. Create the SlotMachine testing tool.
+     * 4. Prepare a contest configuration.
+     * 5. Generate the solution.
+     * 6. Apply the generated movements.
+     * 7. Verify that only one distinct symbol remains.
      */
     @Test
     public void accordingC3ShouldSolveContestConfiguration()
     {
-
         /*
          * Step 1:
          *
          * Create contest solver.
          */
         SlotMachineContest contest = new SlotMachineContest();
-
-
-
+    
+    
         /*
          * Step 2:
          *
-         * Define machine size.
-         *
-         * The contest machine has:
-         *
-         * n wheels
-         * n symbols
+         * Define a valid contest size.
          */
         int n = 4;
-
-
-
+    
+    
         /*
          * Step 3:
          *
-         * Create a testing machine.
-         *
-         * This machine is used only
-         * to verify the solution.
+         * Create the testing machine.
+         * It remains invisible.
          */
         SlotMachine machine = new SlotMachine(n);
-
-
-
+    
+        
         /*
          * Step 4:
          *
-         * Obtain solution movements.
-         *
-         * Each movement has:
-         *
-         * [wheel, steps]
+         * Prepare a valid contest configuration.
          */
-        int[][] solution = contest.solve(n);
-
-
-
+        for(int wheel = 2; wheel <= n; wheel++)
+        {
+            machine.spin(wheel, wheel - 1);
+        }
+    
+    
         /*
          * Step 5:
          *
-         * Validate that the solver
-         * generated movements.
+         * Generate the contest solution.
          */
+        int[][] solution = contest.solve(n);
+    
         assertNotNull(solution);
-
-        assertEquals(n, solution.length);
-
-
-
+    
+    
         /*
          * Step 6:
          *
-         * Apply each generated movement
-         * to the SlotMachine testing tool.
+         * Apply the generated movements.
          */
-        for(int i = 0; i < solution.length; i++)
-        {
+        for(int i = 0; i < solution.length; i++){
             int wheel = solution[i][0];
-
             int steps = solution[i][1];
-
-            machine.spin(wheel,steps);
+    
+            if(steps > 0){
+                machine.spin(wheel, steps);
+            }
         }
         
         /* Dear Teacher Angie :)
@@ -123,18 +110,18 @@ public class SlotMachineC3AcceptanceTest
          *
          * This loop does not reproduce the solve algorithm;
          * it only executes the movements already generated
-         * by solve(n) using the public SlotMachine interface.
+         * by solve(n) using the public SlotMachine tool.
          */
 
-        
-        
+    
+    
         /*
          * Step 7:
          *
-         * Validate that the machine reached
-         * a valid contest state.
+         * Jackpot means that all wheels show
+         * the same symbol.
          */
-        assertEquals(n, machine.distinctSymbols());
+        assertEquals(1, machine.distinctSymbols());
     }
 
 
@@ -142,6 +129,96 @@ public class SlotMachineC3AcceptanceTest
 
     /**
      * Acceptance Scenario 2:
+     * 
+     * Can the generated actions fully traverse the testing tool's public SlotMachine 
+     * and maintain the contract?
+     * 
+     * The generated contest solution can be executed
+     * completely through the public SlotMachine tool.
+     *
+     * User flow:
+     *
+     * 1. Create contest solver.
+     * 2. Define a valid contest size.
+     * 3. Create and prepare a testing machine.
+     * 4. Generate the solution.
+     * 5. Validate and execute every movement.
+     * 6. Verify that the complete execution succeeds.
+     */
+    @Test
+    public void accordingC3ShouldExecuteValidContestMovements()
+    {
+        /*
+         * Step 1:
+         *
+         * Create contest solver.
+         */
+        SlotMachineContest contest = new SlotMachineContest();
+    
+    
+        /*
+         * Step 2:
+         *
+         * Define a valid contest size.
+         */
+        int n = 5;
+    
+    
+        /*
+         * Step 3:
+         *
+         * Create the invisible testing machine.
+         */
+        SlotMachine machine = new SlotMachine(n);
+    
+        for(int wheel = 2; wheel <= n; wheel++)
+        {
+            machine.spin(wheel, wheel - 1);
+        }
+    
+    
+        /*
+         * Step 4:
+         *
+         * Generate the contest solution.
+         */
+        int[][] solution = contest.solve(n);
+    
+        assertNotNull(solution);
+    
+    
+        /*
+         * Step 5:
+         *
+         * Validate and execute each generated action.
+         */
+        for(int i = 0; i < solution.length; i++){
+            int wheel = solution[i][0];
+            int steps = solution[i][1];
+    
+            assertTrue(wheel >= 1);
+            assertTrue(wheel <= n);
+            assertTrue(steps >= 0);
+    
+            if(steps > 0){
+                machine.spin(wheel, steps);
+    
+                assertTrue(machine.ok());
+            }
+        }
+    
+    
+        /*
+         * Step 6:
+         *
+         * Verify the result after executing
+         * the complete solution.
+         */
+        assertEquals(1, machine.distinctSymbols());
+    }
+    
+    /**
+     * Acceptance Scenario 3 (OPTIONAL):
      *
      * The user executes the complete simulation
      * of the contest solution.

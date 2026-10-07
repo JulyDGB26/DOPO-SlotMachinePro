@@ -24,7 +24,7 @@ public class SlotMachineContest
      * @param n number of wheels and symbols
      * @return sequence of movements [wheel, steps]
      */
-    public int[][] solve(int n)
+    public static int[][] solve(int n)
     {
         if(n <= 0){
             return new int[0][0];
@@ -51,7 +51,7 @@ public class SlotMachineContest
      *
      * @param n number of wheels and symbols
      */
-    public void simulate(int n)
+    public static void simulate(int n)
     {
         if(n <= 0)
         {
@@ -85,7 +85,7 @@ public class SlotMachineContest
      * @param machine machine to configure
      * @param n number of wheels
      */
-    private void prepContestConfig(SlotMachine machine, int n)
+    private static void prepContestConfig(SlotMachine machine, int n)
     {
         for(int wheel = 1; wheel <= n; wheel++){
             if(wheel > 1){
