@@ -19,6 +19,7 @@ public class Wheel
     
     private Triangle symbolMarker;
     private int circleOffset;
+    private int slotIndex;
 
     // Horizontal slot origin and spacing (pixels)
     private static final int SLOT_ORIGIN  = 55;
@@ -36,6 +37,7 @@ public class Wheel
         locked  = false;
         visible = false;
         circleOffset = 0;
+        this.slotIndex = slotIndex;
 
         int sx = SLOT_ORIGIN + SLOT_SPACING * slotIndex;
 
@@ -68,6 +70,29 @@ public class Wheel
         symbolMarker.changeSize(10, 12);
         symbolMarker.moveHorizontal((sx + 75) - 140);
         symbolMarker.moveVertical(80 - 15);
+    }
+
+    /**
+     * Moves the existing graphical elements to a new 0-based slot.
+     * Symbol objects, selection, size, visibility and lock state
+     * are preserved. Normally called while the machine is hidden.
+     *
+     * @param newSlotIndex new 0-based position in the machine
+     */
+    public void moveToSlot(int newSlotIndex)
+    {
+        int movement = (newSlotIndex - slotIndex) * SLOT_SPACING;
+
+        if(movement == 0){
+            return;
+        }
+
+        slotFrame.moveHorizontal(movement);
+        circle.moveHorizontal(movement);
+        lockBar.moveHorizontal(movement);
+        symbolMarker.moveHorizontal(movement);
+
+        slotIndex = newSlotIndex;
     }
 
     // ── symbol management ────────────────────────────────────────────────────
@@ -361,6 +386,7 @@ public class Wheel
         slotFrame.changeColor(frameColor());
         slotFrame.makeVisible();
     
+        lockBar.changeColor(locked ? "red" : "green");
         lockBar.makeVisible();
     
         updateSymbolAppearance();
@@ -480,7 +506,7 @@ public class Wheel
         if(symbols.length == 0){
             centerSymbol(70);
             circle.changeSize(70);
-            circle.changeColor("white");
+            circle.changeColor(locked ? "gray" : "white");
             circle.makeVisible();
             symbolMarker.makeInvisible();
             return;
@@ -492,7 +518,7 @@ public class Wheel
     
         centerSymbol(size);
         circle.changeSize(size);
-        circle.changeColor(current.getColor());
+        circle.changeColor(locked ? "gray" : current.getColor());
     
         if(current.isVisible()){
             circle.makeVisible();

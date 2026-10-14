@@ -574,6 +574,18 @@ public class SlotMachine
     }
     
     /**
+     * Aligns the graphics of every wheel with its current array position.
+     * It does not replace wheels or symbols or change their logical state.
+     * The interface should hide the machine before calling this method.
+     */
+    public void synchronizeWheelPositions()
+    {
+        for(int i = 0; i < wheels.length; i++){
+            wheels[i].moveToSlot(i);
+        }
+    }
+
+    /**
      * Makes the slot machine (housing) and all its wheels visible on canvas.
      */
     public void makeVisible()

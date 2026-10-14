@@ -61,6 +61,6 @@ public class LeftyWheel extends Wheel
      */
     protected String frameColor()
     {
-        return "white";
+        return "yellow";
     }
 }

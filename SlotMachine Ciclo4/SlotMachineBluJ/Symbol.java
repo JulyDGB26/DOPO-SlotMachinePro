@@ -120,14 +120,14 @@ public class Symbol
         if(this == obj){
             return true;
         }
-
-        if(!(obj instanceof Symbol)){
+    
+        try{
+            Symbol other = (Symbol)obj;
+            return color.equals(other.color);
+        }
+        catch(ClassCastException e){
             return false;
         }
-
-        Symbol other = (Symbol)obj;
-
-        return color.equals(other.color);
     }
 
     /**
