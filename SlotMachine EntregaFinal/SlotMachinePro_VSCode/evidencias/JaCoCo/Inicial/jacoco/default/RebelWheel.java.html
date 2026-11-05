@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>RebelWheel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SlotMachinePro - Cierre Proyecto Inicial</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">RebelWheel.java</span></div><h1>RebelWheel.java</h1><pre class="source lang-java linenums">/**
+ * Represents a rebel wheel in the slot machine.
+ *
+ * A rebel wheel preserves the normal spinning and symbol behavior,
+ * but it cannot be locked, swapped, or deleted.
+ *
+ * @author Julian Gomez Boada
+ * @version Ciclo4-MC2
+ */
+public class RebelWheel extends Wheel
+{
+    /**
+     * Creates a rebel wheel at the given 0-based slot index.
+     *
+     * @param slotIndex 0-based position of this wheel in the machine
+     */
+    public RebelWheel(int slotIndex)
+    {
+<span class="fc" id="L19">        super(slotIndex);</span>
+<span class="fc" id="L20">    }</span>
+
+    /**
+     * Indicates that a rebel wheel cannot be locked.
+     *
+     * @return false
+     */
+    @Override
+    public boolean canBeLocked()
+    {
+<span class="fc" id="L30">        return false;</span>
+    }
+
+    /**
+     * Indicates that a rebel wheel cannot be swapped.
+     *
+     * @return false
+     */
+    @Override
+    public boolean canBeSwapped()
+    {
+<span class="fc" id="L41">        return false;</span>
+    }
+
+    /**
+     * Indicates that a rebel wheel cannot be deleted.
+     *
+     * @return false
+     */
+    @Override
+    public boolean canBeDeleted()
+    {
+<span class="fc" id="L52">        return false;</span>
+    }
+    
+    /**
+     * Returns the visual identification color
+     * of a rebel wheel.
+     *
+     * @return orange frame color
+     */
+    @Override
+    protected String frameColor()
+    {
+<span class="nc" id="L64">        return &quot;orange&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>LeftyWheel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SlotMachinePro - Cierre Proyecto Inicial</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">LeftyWheel.java</span></div><h1>LeftyWheel.java</h1><pre class="source lang-java linenums">/**
+ * Represents a lefty wheel in the slot machine.
+ *
+ * A lefty wheel behaves like a normal wheel when it has no wheel
+ * immediately to its left. When a left wheel exists, spinning this
+ * wheel copies the visible state of that neighbor, provided that
+ * the same symbol belongs to this wheel.
+ *
+ * @author Julian Gomez Boada
+ * @version Ciclo4-MC2
+ */
+public class LeftyWheel extends Wheel
+{
+    /**
+     * Creates a lefty wheel at the given 0-based slot index.
+     *
+     * @param slotIndex 0-based position of this wheel in the machine
+     */
+    public LeftyWheel(int slotIndex)
+    {
+<span class="fc" id="L21">        super(slotIndex);</span>
+<span class="fc" id="L22">    }</span>
+
+    /**
+     * Spins this lefty wheel considering its immediate left neighbor.
+     *
+     * If no left wheel exists, the inherited normal spin is performed.
+     * If a left wheel exists, this wheel copies its currently selected
+     * symbol as a consequence of a spin.
+     *
+     * @param leftWheel wheel immediately to the left, or null if none exists
+     * @return true if the operation was successfully performed
+     */
+    @Override
+    public boolean spin(Wheel leftWheel)
+    {
+<span class="fc bfc" id="L37" title="All 2 branches covered.">        if(leftWheel == null){</span>
+<span class="fc" id="L38">            return super.spin();</span>
+        }
+    
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        if(isLocked()){</span>
+<span class="fc" id="L42">            return false;</span>
+        }
+    
+<span class="fc" id="L45">        String leftSymbol = leftWheel.configuration();</span>
+    
+<span class="pc bpc" id="L47" title="1 of 2 branches missed.">        if(leftSymbol == null){</span>
+<span class="nc" id="L48">            return false;</span>
+        }
+    
+<span class="fc" id="L51">        return placeSymbolBySpin(leftSymbol);</span>
+    }
+    
+    /**
+     * Returns the color used to identify this wheel type.
+     *
+     * Normal wheels use a white frame.
+     * Specialized wheels may override this operation.
+     *
+     * @return frame color
+     */
+    protected String frameColor()
+    {
+<span class="nc" id="L64">        return &quot;yellow&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

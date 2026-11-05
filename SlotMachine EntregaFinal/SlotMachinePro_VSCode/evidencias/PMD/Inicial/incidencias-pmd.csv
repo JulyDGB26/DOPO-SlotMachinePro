@@ -1,0 +1,5 @@
+﻿"Prioridad,""Regla"",""Archivo"",""Linea"",""Mensaje"""
+"3,""EmptyCatchBlock"",""C:\Dev\SlotMachinePro_VSCode\src\main\java\Canvas.java"",""148"",""Avoid empty catch blocks"""
+"3,""UnusedPrivateField"",""C:\Dev\SlotMachinePro_VSCode\src\main\java\SlotMachine.java"",""17"",""Avoid unused private fields such as 'visible'."""
+"4,""UnnecessaryFullyQualifiedName"",""C:\Dev\SlotMachinePro_VSCode\src\main\java\SlotMachineProGUI.java"",""94"",""Unnecessary qualifier 'JFrame': 'WindowConstants::DO_NOTHING_ON_CLOSE' is already in scope because it is inherited by an enclosing type"""
+"4,""UselessParentheses"",""C:\Dev\SlotMachinePro_VSCode\src\main\java\Wheel.java"",""71"",""Useless parentheses around `sx + 75`."""

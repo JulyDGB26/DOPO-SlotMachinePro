@@ -1,0 +1,979 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SlotMachineProGUI.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SlotMachinePro - Cierre Proyecto Inicial</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">SlotMachineProGUI.java</span></div><h1>SlotMachineProGUI.java</h1><pre class="source lang-java linenums">import javax.swing.JFrame;
+import javax.swing.JPanel;
+import javax.swing.JButton;
+import javax.swing.JLabel;
+import javax.swing.JOptionPane;
+import javax.swing.SwingConstants;
+import javax.swing.SwingUtilities;
+import javax.swing.BorderFactory;
+import java.awt.BorderLayout;
+import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
+
+/**
+ * Graphical interface for the SlotMachinePro simulator by Julian G.
+ *
+ * The main window offers four operation groups. The existing
+ * JOptionPane submenus and their interactions are preserved.
+ * The Canvas still displays the machine and specialized symbols.
+ *
+ * The graphical demonstration accepts at most three simultaneous
+ * wheels because the Canvas has a fixed width. The domain model
+ * has no corresponding limit. Wheel positioning is synchronized
+ * after structural operations without replacing the domain objects.
+ *
+ * Initial symbols allow a jackpot after three global spins:
+ * [red | yellow | blue] -&gt; ... -&gt; [red | red | red].
+ * The existing dialog announces each newly reached jackpot.
+ *
+ * Dear Teacher Angie, i hope that my work, which required so much effort and time, meets with your approval.
+ *
+ * @author Julian Gomez Boada
+ * @version Cierre y Pulido Final
+ */
+public class SlotMachineProGUI extends JFrame
+{
+    private SlotMachine machine;
+
+    // VIEW - COMPONENTS REUSED BY THE CONTROLLER
+    private JLabel labelStatus;
+    private JButton buttonPlay;
+    private JButton buttonWheels;
+    private JButton buttonSymbols;
+    private JButton buttonConfiguration;
+    private JButton buttonExit;
+
+    /**
+     * Creates the model, prepares the view, registers its controller
+     * and starts the existing graphical machine demonstration.
+     */
+    private SlotMachineProGUI()
+<span class="nc" id="L54">    {</span>
+<span class="nc" id="L55">        machine = new SlotMachine();</span>
+<span class="nc" id="L56">        prepareModel();</span>
+<span class="nc" id="L57">        prepareView();</span>
+<span class="nc" id="L58">        prepareController();</span>
+<span class="nc" id="L59">        start();</span>
+<span class="nc" id="L60">    }</span>
+
+    /**
+     * Preserves the validated three-wheel demonstration setup.
+     * Different symbol counts make a jackpot reachable through spins.
+     */
+    private void prepareModel()
+    {
+<span class="nc" id="L68">        machine.addWheel(1);</span>
+<span class="nc" id="L69">        machine.addWheel(2);</span>
+<span class="nc" id="L70">        machine.addWheel(3);</span>
+
+<span class="nc" id="L72">        machine.addSymbol(1, &quot;red&quot;);</span>
+<span class="nc" id="L73">        machine.addSymbol(1, &quot;blue&quot;);</span>
+<span class="nc" id="L74">        machine.addSymbol(1, &quot;green&quot;);</span>
+
+<span class="nc" id="L76">        machine.addSymbol(2, &quot;yellow&quot;);</span>
+<span class="nc" id="L77">        machine.addSymbol(2, &quot;red&quot;);</span>
+
+<span class="nc" id="L79">        machine.addSymbol(3, &quot;blue&quot;);</span>
+<span class="nc" id="L80">        machine.addSymbol(3, &quot;green&quot;);</span>
+<span class="nc" id="L81">        machine.addSymbol(3, &quot;yellow&quot;);</span>
+<span class="nc" id="L82">        machine.addSymbol(3, &quot;red&quot;);</span>
+<span class="nc" id="L83">    }</span>
+
+    // VIEW - WINDOW AND COMPONENT LAYOUT
+
+    /**
+     * Builds the main JFrame using the Swing containers studied
+     * in class. The existing operation dialogs remain unchanged.
+     */
+    private void prepareView()
+    {
+<span class="nc" id="L93">        setTitle(&quot;Slot Machine Pro - Menu principal&quot;);</span>
+<span class="nc" id="L94">        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);</span>
+<span class="nc" id="L95">        setLayout(new BorderLayout(10, 10));</span>
+
+<span class="nc" id="L97">        JPanel panelStatus = prepareViewStatus();</span>
+<span class="nc" id="L98">        JPanel panelButtons = prepareViewButtons();</span>
+
+<span class="nc" id="L100">        add(panelStatus, BorderLayout.NORTH);</span>
+<span class="nc" id="L101">        add(panelButtons, BorderLayout.CENTER);</span>
+
+<span class="nc" id="L103">        pack();</span>
+<span class="nc" id="L104">        setLocationRelativeTo(null);</span>
+<span class="nc" id="L105">        setResizable(false);</span>
+<span class="nc" id="L106">    }</span>
+
+    /**
+     * Prepares the status panel displayed above the menu buttons.
+     * Its label is an attribute because actions refresh its content.
+     *
+     * @return the status container
+     */
+    private JPanel prepareViewStatus()
+    {
+<span class="nc" id="L116">        JPanel panel = new JPanel(new BorderLayout());</span>
+<span class="nc" id="L117">        panel.setBorder(BorderFactory.createEmptyBorder(15, 18, 4, 18));</span>
+<span class="nc" id="L118">        labelStatus = new JLabel(&quot;&quot;, SwingConstants.CENTER);</span>
+<span class="nc" id="L119">        panel.add(labelStatus, BorderLayout.CENTER);</span>
+<span class="nc" id="L120">        return panel;</span>
+    }
+
+    /**
+     * Prepares the main navigation buttons. The components are
+     * attributes because their action listeners are registered later.
+     *
+     * @return the menu container
+     */
+    private JPanel prepareViewButtons()
+    {
+<span class="nc" id="L131">        JPanel panel = new JPanel(new GridLayout(5, 1, 7, 7));</span>
+<span class="nc" id="L132">        panel.setBorder(BorderFactory.createEmptyBorder(8, 24, 18, 24));</span>
+
+<span class="nc" id="L134">        buttonPlay = new JButton(&quot;Jugar&quot;);</span>
+<span class="nc" id="L135">        buttonWheels = new JButton(&quot;Administrar ruedas&quot;);</span>
+<span class="nc" id="L136">        buttonSymbols = new JButton(&quot;Administrar simbolos&quot;);</span>
+<span class="nc" id="L137">        buttonConfiguration = new JButton(&quot;Consultar y configurar&quot;);</span>
+<span class="nc" id="L138">        buttonExit = new JButton(&quot;Salir&quot;);</span>
+
+<span class="nc" id="L140">        panel.add(buttonPlay);</span>
+<span class="nc" id="L141">        panel.add(buttonWheels);</span>
+<span class="nc" id="L142">        panel.add(buttonSymbols);</span>
+<span class="nc" id="L143">        panel.add(buttonConfiguration);</span>
+<span class="nc" id="L144">        panel.add(buttonExit);</span>
+<span class="nc" id="L145">        return panel;</span>
+    }
+
+    // CONTROLLER - EVENT REGISTRATION
+
+    /**
+     * Registers a listener for each active component.
+     * Anonymous listeners delegate behavior to dedicated actions,
+     * following the course's event/condition/action scheme.
+     */
+    private void prepareController()
+    {
+<span class="nc" id="L157">        buttonPlay.addActionListener(new ActionListener(){</span>
+<span class="nc" id="L158">            public void actionPerformed(ActionEvent event){buttonPlayAction();}</span>
+        });
+
+<span class="nc" id="L161">        buttonWheels.addActionListener(new ActionListener(){</span>
+<span class="nc" id="L162">            public void actionPerformed(ActionEvent event){buttonWheelsAction();}</span>
+        });
+
+<span class="nc" id="L165">        buttonSymbols.addActionListener(new ActionListener(){</span>
+<span class="nc" id="L166">            public void actionPerformed(ActionEvent event){buttonSymbolsAction();}</span>
+        });
+
+<span class="nc" id="L169">        buttonConfiguration.addActionListener(new ActionListener()</span>
+<span class="nc" id="L170">        {</span>
+<span class="nc" id="L171">            public void actionPerformed(ActionEvent event){buttonConfigurationAction();}</span>
+        });
+
+<span class="nc" id="L174">        buttonExit.addActionListener(new ActionListener(){</span>
+<span class="nc" id="L175">            public void actionPerformed(ActionEvent event){buttonExitAction();}</span>
+        });
+
+        // Closing the window is equivalent to selecting &quot;Salir&quot;.
+<span class="nc" id="L179">        addWindowListener(new WindowAdapter(){</span>
+            @Override
+<span class="nc" id="L181">            public void windowClosing(WindowEvent event){buttonExitAction();}</span>
+        });
+<span class="nc" id="L183">    }</span>
+
+    // CONTROLLER - ACTION METHODS
+
+    /** Opens the original play submenu, then refreshes the status. */
+    private void buttonPlayAction()
+    {
+<span class="nc" id="L190">        showPlayMenu();</span>
+<span class="nc" id="L191">        refreshView();</span>
+<span class="nc" id="L192">    }</span>
+
+    /** Opens wheel administration without changing its operations. */
+    private void buttonWheelsAction()
+    {
+<span class="nc" id="L197">        showWheelMenu();</span>
+<span class="nc" id="L198">        refreshView();</span>
+<span class="nc" id="L199">    }</span>
+
+    /** Opens symbol administration without changing its operations. */
+    private void buttonSymbolsAction()
+    {
+<span class="nc" id="L204">        showSymbolMenu();</span>
+<span class="nc" id="L205">        refreshView();</span>
+<span class="nc" id="L206">    }</span>
+
+    /** Opens configuration and read-only consultation. */
+    private void buttonConfigurationAction()
+    {
+<span class="nc" id="L211">        showConfigurationMenu();</span>
+<span class="nc" id="L212">        refreshView();</span>
+<span class="nc" id="L213">    }</span>
+
+    /** Preserves the original machine-exit behavior. */
+    private void buttonExitAction()
+    {
+<span class="nc" id="L218">        machine.exit();</span>
+<span class="nc" id="L219">    }</span>
+
+    /**
+     * Makes the existing Canvas visible and initializes the GUI status.
+     */
+    private void start()
+    {
+<span class="nc" id="L226">        machine.makeVisible();</span>
+<span class="nc" id="L227">        refreshView();</span>
+<span class="nc" id="L228">    }</span>
+
+    /**
+     * Reads the domain state without storing duplicate model data.
+     * Called when a submenu returns to the main interface.
+     */
+    private void refreshView()
+    {
+<span class="nc bnc" id="L236" title="All 2 branches missed.">        labelStatus.setText(&quot;&lt;html&gt;&lt;div style='text-align:center;'&gt;&quot; + &quot;SLOT MACHINE PRO&lt;br&gt;&quot; + &quot;Estado actual: &quot; + buildStatus(machine.configuration()) + &quot;&lt;br&gt;&quot; + &quot;Jackpot: &quot; + (machine.isJackpot() ? &quot;SI&quot; : &quot;NO&quot;) + &quot;&lt;/div&gt;&lt;/html&gt;&quot;);</span>
+<span class="nc" id="L237">    }</span>
+
+    /**
+     * Starts the Swing interface on its event-dispatch thread.
+     *
+     * @param args command-line arguments (not used)
+     */
+    public static void main(String[] args)
+    {
+<span class="nc" id="L246">        SwingUtilities.invokeLater(new Runnable(){</span>
+            public void run()
+            {
+<span class="nc" id="L249">                SlotMachineProGUI gui = new SlotMachineProGUI();</span>
+<span class="nc" id="L250">                gui.setVisible(true);</span>
+<span class="nc" id="L251">            }</span>
+        });
+<span class="nc" id="L253">    }</span>
+
+    // EXISTING OPERATIONS - JOPTIONPANE SUBMENUS
+
+    /**
+     * Shows the existing spinning operations in the play submenu.
+     */
+    private void showPlayMenu()
+    {
+<span class="nc" id="L262">        String[] options = {&quot;Girar todas&quot;, &quot;Girar una rueda&quot;, &quot;Volver&quot;};</span>
+
+<span class="nc" id="L264">        boolean inMenu = true;</span>
+
+<span class="nc bnc" id="L266" title="All 2 branches missed.">        while(inMenu){</span>
+<span class="nc" id="L267">            int choice = JOptionPane.showOptionDialog(null, &quot;Configuracion: &quot; + buildStatus(machine.configuration()) + &quot;\n\nSelecciona una accion:&quot;, &quot;Slot Machine Pro - Jugar&quot;, JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);</span>
+
+<span class="nc bnc" id="L269" title="All 3 branches missed.">            switch(choice){</span>
+                case 0:
+<span class="nc" id="L271">                    boolean wasJackpot = machine.isJackpot();</span>
+<span class="nc" id="L272">                    machine.spin();</span>
+<span class="nc bnc" id="L273" title="All 2 branches missed.">                    if(!machine.ok()){</span>
+<span class="nc" id="L274">                        showError(&quot;No fue posible girar las ruedas.&quot;);</span>
+                    }
+                    else{
+<span class="nc" id="L277">                        showJackpotIfNew(wasJackpot);</span>
+                    }
+<span class="nc" id="L279">                    break;</span>
+
+                case 1:
+<span class="nc" id="L282">                    spinWheel();</span>
+<span class="nc" id="L283">                    break;</span>
+
+                default:
+<span class="nc" id="L286">                    inMenu = false;</span>
+                    break;
+            }
+<span class="nc" id="L289">        }</span>
+<span class="nc" id="L290">    }</span>
+
+    /**
+     * Provides wheel creation, deletion, locking, unlocking and swapping.
+     * The menu limits the visual demonstration to three wheels,
+     * without imposing that restriction on the machine model.
+     */
+    private void showWheelMenu()
+    {
+<span class="nc" id="L299">        String[] options = {&quot;Agregar rueda&quot;, &quot;Eliminar rueda&quot;, &quot;Bloquear&quot;, &quot;Desbloquear&quot;, &quot;Intercambiar&quot;, &quot;Volver&quot;};</span>
+
+<span class="nc" id="L301">        boolean inMenu = true;</span>
+
+<span class="nc bnc" id="L303" title="All 2 branches missed.">        while(inMenu){</span>
+<span class="nc" id="L304">            int choice = JOptionPane.showOptionDialog(null, &quot;Ruedas actuales: &quot; + machine.wheels() + &quot;\nConfiguracion: &quot; + buildStatus(machine.configuration()) + &quot;\n\nSelecciona una accion:&quot;, &quot;Slot Machine Pro - Administrar ruedas&quot;, JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);</span>
+
+<span class="nc bnc" id="L306" title="All 6 branches missed.">            switch(choice){</span>
+                case 0:
+<span class="nc" id="L308">                    addWheel();</span>
+<span class="nc" id="L309">                    break;</span>
+
+                case 1:
+<span class="nc" id="L312">                    deleteWheel();</span>
+<span class="nc" id="L313">                    break;</span>
+
+                case 2:
+<span class="nc" id="L316">                    lockWheel();</span>
+<span class="nc" id="L317">                    break;</span>
+
+                case 3:
+<span class="nc" id="L320">                    unlockWheel();</span>
+<span class="nc" id="L321">                    break;</span>
+
+                case 4:
+<span class="nc" id="L324">                    swapWheels();</span>
+<span class="nc" id="L325">                    break;</span>
+
+                default:
+<span class="nc" id="L328">                    inMenu = false;</span>
+                    break;
+            }
+<span class="nc" id="L331">        }</span>
+<span class="nc" id="L332">    }</span>
+
+    /**
+     * Adds a selected wheel type at a valid position. The three-wheel
+     * restriction applies only to this fixed-width demonstration.
+     *
+     * The hide/synchronize/show cycle removes stale graphics and
+     * moves all surviving wheels to their correct visual slots.
+     */
+    private void addWheel()
+    {
+<span class="nc" id="L343">        final int maxVisualWheels = 3;</span>
+<span class="nc" id="L344">        int currentWheels = machine.wheels();</span>
+
+<span class="nc bnc" id="L346" title="All 2 branches missed.">        if(currentWheels &gt;= maxVisualWheels){</span>
+<span class="nc" id="L347">            JOptionPane.showMessageDialog(null, &quot;Limite de representacion grafica: esta demostracion &quot; + &quot;permite un maximo de 3 ruedas al mismo tiempo.&quot; + &quot;\nElimina una rueda antes de agregar otra.&quot;, &quot;Slot Machine Pro - Limite visual&quot;, JOptionPane.INFORMATION_MESSAGE);</span>
+<span class="nc" id="L348">            return;</span>
+        }
+
+<span class="nc" id="L351">        String[] types = {&quot;Normal&quot;, &quot;Lefty&quot;, &quot;Rebel&quot;, &quot;Cancelar&quot;};</span>
+        
+<span class="nc" id="L353">        int selection = JOptionPane.showOptionDialog(null, &quot;Selecciona el tipo de rueda que deseas agregar:&quot;, &quot;Slot Machine Pro - Agregar rueda&quot;, JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, types, types[0]);</span>
+
+<span class="nc bnc" id="L355" title="All 4 branches missed.">        if(selection &lt; 0 || selection &gt;= 3){</span>
+<span class="nc" id="L356">            return;</span>
+        }
+
+        String type;
+<span class="nc bnc" id="L360" title="All 3 branches missed.">        switch(selection){</span>
+            case 0:
+<span class="nc" id="L362">                type = &quot;normal&quot;;</span>
+<span class="nc" id="L363">                break;</span>
+            case 1:
+<span class="nc" id="L365">                type = &quot;lefty&quot;;</span>
+<span class="nc" id="L366">                break;</span>
+            default:
+<span class="nc" id="L368">                type = &quot;rebel&quot;;</span>
+                break;
+        }
+
+<span class="nc" id="L372">        String positionInput = JOptionPane.showInputDialog(&quot;Posicion de la nueva rueda (1-&quot; + (currentWheels + 1) + &quot;):&quot; + &quot;\nLas ruedas siguientes se desplazan una posicion.&quot;);</span>
+        
+<span class="nc bnc" id="L374" title="All 2 branches missed.">        if(positionInput == null){</span>
+<span class="nc" id="L375">            return;</span>
+        }
+
+        int position;
+        try{
+<span class="nc" id="L380">            position = Integer.parseInt(positionInput.trim());</span>
+        }
+<span class="nc" id="L382">        catch(NumberFormatException e){</span>
+<span class="nc" id="L383">            showError(&quot;Ingresa un numero entero valido para la posicion.&quot;);</span>
+<span class="nc" id="L384">            return;</span>
+<span class="nc" id="L385">        }</span>
+
+        // SlotMachine normalizes out-of-range positions. The interactive
+        // menu validates them explicitly so that the user is not surprised.
+<span class="nc bnc" id="L389" title="All 4 branches missed.">        if(position &lt; 1 || position &gt; currentWheels + 1){</span>
+<span class="nc" id="L390">            showError(&quot;La posicion debe estar entre 1 y &quot; + (currentWheels + 1) + &quot;.&quot;);</span>
+<span class="nc" id="L391">            return;</span>
+        }
+
+        // The model preserves the existing wheels and their symbols.
+        // Hiding first prevents obsolete paint objects from remaining.
+<span class="nc" id="L396">        machine.makeInvisible();</span>
+<span class="nc" id="L397">        machine.addWheel(type, position);</span>
+<span class="nc" id="L398">        boolean success = machine.ok();</span>
+<span class="nc bnc" id="L399" title="All 2 branches missed.">        if(success){</span>
+<span class="nc" id="L400">            machine.synchronizeWheelPositions();</span>
+        }
+<span class="nc" id="L402">        machine.makeVisible();</span>
+
+<span class="nc bnc" id="L404" title="All 2 branches missed.">        if(!success){</span>
+<span class="nc" id="L405">            showError(&quot;No se pudo agregar la rueda solicitada.&quot;);</span>
+<span class="nc" id="L406">            return;</span>
+        }
+
+<span class="nc" id="L409">        JOptionPane.showMessageDialog(null, &quot;Se agrego la rueda &quot; + types[selection] + &quot; en la posicion &quot; + position + &quot;.&quot; + &quot;\nRuedas actuales: &quot; + machine.wheels() + &quot;\n\nLa nueva rueda no contiene simbolos todavia.&quot; + &quot;\nPuedes agregarlos desde Administrar simbolos.&quot;, &quot;Slot Machine Pro - Rueda agregada&quot;, JOptionPane.INFORMATION_MESSAGE);</span>
+<span class="nc" id="L410">    }</span>
+
+    /**
+     * Removes the wheel at the position selected by the player.
+     * Rebel wheels retain their model-defined deletion restriction.
+     * A hide/synchronize/show cycle removes the deleted wheel graphics
+     * and closes any gaps between the surviving wheels.
+     */
+    private void deleteWheel()
+    {
+<span class="nc" id="L420">        int currentWheels = machine.wheels();</span>
+
+<span class="nc bnc" id="L422" title="All 2 branches missed.">        if(currentWheels == 0){</span>
+<span class="nc" id="L423">            showError(&quot;No hay ruedas para eliminar.&quot;);</span>
+<span class="nc" id="L424">            return;</span>
+        }
+
+<span class="nc" id="L427">        String positionInput = JOptionPane.showInputDialog(&quot;Numero de rueda a eliminar (1-&quot; + currentWheels + &quot;):&quot; + &quot;\nLas ruedas Rebel no pueden eliminarse.&quot;);</span>
+        
+<span class="nc bnc" id="L429" title="All 2 branches missed.">        if(positionInput == null){</span>
+<span class="nc" id="L430">            return;</span>
+        }
+
+        int position;
+        try{
+<span class="nc" id="L435">            position = Integer.parseInt(positionInput.trim());</span>
+        }
+<span class="nc" id="L437">        catch(NumberFormatException e){</span>
+<span class="nc" id="L438">            showError(&quot;Ingresa un numero entero valido para la posicion.&quot;);</span>
+<span class="nc" id="L439">            return;</span>
+<span class="nc" id="L440">        }</span>
+
+<span class="nc bnc" id="L442" title="All 4 branches missed.">        if(position &lt; 1 || position &gt; currentWheels){</span>
+<span class="nc" id="L443">            showError(&quot;La posicion debe estar entre 1 y &quot; + currentWheels + &quot;.&quot;);</span>
+<span class="nc" id="L444">            return;</span>
+        }
+
+        // Hide every existing wheel before removal so its graphical
+        // elements do not remain drawn after the model drops it.
+<span class="nc" id="L449">        machine.makeInvisible();</span>
+<span class="nc" id="L450">        machine.delWheel(position);</span>
+<span class="nc" id="L451">        boolean success = machine.ok();</span>
+<span class="nc bnc" id="L452" title="All 2 branches missed.">        if(success){</span>
+<span class="nc" id="L453">            machine.synchronizeWheelPositions();</span>
+        }
+<span class="nc" id="L455">        machine.makeVisible();</span>
+
+<span class="nc bnc" id="L457" title="All 2 branches missed.">        if(!success){</span>
+<span class="nc" id="L458">            showError(&quot;No se pudo eliminar la rueda &quot; + position + &quot;.&quot; + &quot;\nLas ruedas Rebel no permiten eliminacion.&quot;);</span>
+<span class="nc" id="L459">            return;</span>
+        }
+
+<span class="nc" id="L462">        JOptionPane.showMessageDialog(null, &quot;Se elimino la rueda de la posicion &quot; + position + &quot;.&quot; + &quot;\nRuedas restantes: &quot; + machine.wheels(), &quot;Slot Machine Pro - Rueda eliminada&quot;, JOptionPane.INFORMATION_MESSAGE);</span>
+<span class="nc" id="L463">    }</span>
+
+    /**
+     * Provides operations for adding, deleting and selecting symbols.
+     * All operations delegate their rules to SlotMachine.
+     */
+    private void showSymbolMenu()
+    {
+<span class="nc" id="L471">        String[] options = {&quot;Agregar simbolo&quot;, &quot;Eliminar simbolo&quot;, &quot;Seleccionar simbolo&quot;, &quot;Volver&quot;};</span>
+
+<span class="nc" id="L473">        boolean inMenu = true;</span>
+
+<span class="nc bnc" id="L475" title="All 2 branches missed.">        while(inMenu){</span>
+<span class="nc" id="L476">            int choice = JOptionPane.showOptionDialog(null, &quot;Ruedas actuales: &quot; + machine.wheels() + &quot;\nSimbolos en la maquina: &quot; + machine.symbols().length + &quot;\nConfiguracion: &quot; + buildStatus(machine.configuration()) + &quot;\n\nSelecciona una accion:&quot;, &quot;Slot Machine Pro - Administrar simbolos&quot;, JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);</span>
+
+<span class="nc bnc" id="L478" title="All 4 branches missed.">            switch(choice){</span>
+                case 0:
+<span class="nc" id="L480">                    addSymbol();</span>
+<span class="nc" id="L481">                    break;</span>
+
+                case 1:
+<span class="nc" id="L484">                    deleteSymbol();</span>
+<span class="nc" id="L485">                    break;</span>
+
+                case 2:
+<span class="nc" id="L488">                    selectSymbol();</span>
+<span class="nc" id="L489">                    break;</span>
+
+                default:
+<span class="nc" id="L492">                    inMenu = false;</span>
+                    break;
+            }
+<span class="nc" id="L495">        }</span>
+<span class="nc" id="L496">    }</span>
+
+    /**
+     * Adds one of the four supported symbol types to a selected wheel.
+     * The color palette is limited to colors recognized by Canvas.
+     */
+    private void addSymbol()
+    {
+<span class="nc" id="L504">        int wheel = requestWheelPosition(&quot;agregar un simbolo&quot;);</span>
+        
+<span class="nc bnc" id="L506" title="All 2 branches missed.">        if(wheel == -1){</span>
+<span class="nc" id="L507">            return;</span>
+        }
+
+<span class="nc" id="L510">        String[] types = {&quot;Normal&quot;, &quot;Ephemeral&quot;, &quot;Shy&quot;, &quot;Pulsing&quot;, &quot;Cancelar&quot;};</span>
+        
+<span class="nc" id="L512">        int selection = JOptionPane.showOptionDialog(null, &quot;Selecciona el tipo de simbolo para la rueda &quot; + wheel + &quot;:&quot;, &quot;Slot Machine Pro - Tipo de simbolo&quot;, JOptionPane.DEFAULT_OPTION, JOptionPane.QUESTION_MESSAGE, null, types, types[0]);</span>
+
+<span class="nc bnc" id="L514" title="All 4 branches missed.">        if(selection &lt; 0 || selection &gt;= 4){</span>
+<span class="nc" id="L515">            return;</span>
+        }
+
+<span class="nc" id="L518">        String[] typeNames = {&quot;normal&quot;, &quot;ephemeral&quot;, &quot;shy&quot;, &quot;pulsing&quot;};</span>
+<span class="nc" id="L519">        String type = typeNames[selection];</span>
+
+        // Canvas recognizes these names as actual graphical colors.
+<span class="nc" id="L522">        String[] palette = {&quot;red&quot;, &quot;blue&quot;, &quot;green&quot;, &quot;yellow&quot;, &quot;magenta&quot;, &quot;orange&quot;, &quot;black&quot;, &quot;gray&quot;, &quot;white&quot;};</span>
+
+<span class="nc" id="L524">        String color = chooseColor(palette, &quot;Selecciona el color del simbolo &quot; + types[selection] + &quot; para la rueda &quot; + wheel + &quot;:&quot;, &quot;Slot Machine Pro - Color del simbolo&quot;);</span>
+        
+<span class="nc bnc" id="L526" title="All 2 branches missed.">        if(color == null){</span>
+<span class="nc" id="L527">            return;</span>
+        }
+
+<span class="nc" id="L530">        machine.addSymbol(type, color, wheel);</span>
+<span class="nc bnc" id="L531" title="All 2 branches missed.">        if(!machine.ok()){</span>
+<span class="nc" id="L532">            showError(&quot;No se pudo agregar el simbolo.&quot; + &quot;\nCada rueda admite un solo simbolo de cada color.&quot;);</span>
+<span class="nc" id="L533">            return;</span>
+        }
+
+        // Updating visibility refreshes an empty wheel that has just
+        // received its first symbol, including its specialized marker.
+<span class="nc" id="L538">        machine.makeVisible();</span>
+
+<span class="nc" id="L540">        JOptionPane.showMessageDialog(null, &quot;Simbolo &quot; + types[selection] + &quot; (&quot; + color + &quot;) agregado&quot; + &quot; a la rueda &quot; + wheel + &quot;.&quot;, &quot;Slot Machine Pro - Simbolo agregado&quot;, JOptionPane.INFORMATION_MESSAGE);</span>
+<span class="nc" id="L541">    }</span>
+
+    /**
+     * Deletes the first occurrence of a color across the machine.
+     * The model does not offer deletion by specific wheel position;
+     * the interface therefore explains this behavior explicitly.
+     */
+    private void deleteSymbol()
+    {
+<span class="nc" id="L550">        String[] colors = existingColors();</span>
+<span class="nc bnc" id="L551" title="All 2 branches missed.">        if(colors.length == 0){</span>
+<span class="nc" id="L552">            showError(&quot;No hay simbolos disponibles para eliminar.&quot;);</span>
+<span class="nc" id="L553">            return;</span>
+        }
+
+<span class="nc" id="L556">        String color = chooseColor(colors, &quot;Selecciona el color que deseas eliminar.&quot; + &quot;\nSe eliminara su primera aparicion, buscando&quot; + &quot; de la rueda 1 hacia la ultima.&quot;, &quot;Slot Machine Pro - Eliminar simbolo&quot;);</span>
+
+<span class="nc bnc" id="L558" title="All 2 branches missed.">        if(color == null){</span>
+<span class="nc" id="L559">            return;</span>
+        }
+
+<span class="nc" id="L562">        machine.delSymbol(color);</span>
+<span class="nc bnc" id="L563" title="All 2 branches missed.">        if(!machine.ok()){</span>
+<span class="nc" id="L564">            showError(&quot;No se pudo eliminar el simbolo &quot; + color + &quot;.&quot;);</span>
+<span class="nc" id="L565">            return;</span>
+        }
+
+<span class="nc" id="L568">        JOptionPane.showMessageDialog(null, &quot;Se elimino la primera aparicion del simbolo &quot; + color + &quot;.&quot; + &quot;\nLas demas apariciones de ese color no se modificaron.&quot;, &quot;Slot Machine Pro - Simbolo eliminado&quot;, JOptionPane.INFORMATION_MESSAGE);</span>
+<span class="nc" id="L569">    }</span>
+
+    /**
+     * Selects a symbol in a particular wheel through placeSymbol.
+     * Selecting may also change the visual state of shy and pulsing
+     * symbols, as defined by their own specialized classes.
+     */
+    private void selectSymbol()
+    {
+<span class="nc" id="L578">        int wheel = requestWheelPosition(&quot;seleccionar un simbolo&quot;);</span>
+<span class="nc bnc" id="L579" title="All 2 branches missed.">        if(wheel == -1){</span>
+<span class="nc" id="L580">            return;</span>
+        }
+
+<span class="nc" id="L583">        String[] colors = existingColors();</span>
+<span class="nc bnc" id="L584" title="All 2 branches missed.">        if(colors.length == 0){</span>
+<span class="nc" id="L585">            showError(&quot;No hay simbolos disponibles para seleccionar.&quot;);</span>
+<span class="nc" id="L586">            return;</span>
+        }
+
+<span class="nc" id="L589">        String color = chooseColor(colors, &quot;Selecciona el color para la rueda &quot; + wheel + &quot;.&quot; + &quot;\nLa lista contiene los colores existentes en la maquina;&quot; + &quot; no todos tienen que estar en esta rueda.&quot;, &quot;Slot Machine Pro - Seleccionar simbolo&quot;);</span>
+        
+<span class="nc bnc" id="L591" title="All 2 branches missed.">        if(color == null){</span>
+<span class="nc" id="L592">            return;</span>
+        }
+
+<span class="nc" id="L595">        boolean wasJackpot = machine.isJackpot();</span>
+<span class="nc" id="L596">        machine.placeSymbol(wheel, color);</span>
+<span class="nc bnc" id="L597" title="All 2 branches missed.">        if(!machine.ok()){</span>
+<span class="nc" id="L598">            showError(&quot;La rueda &quot; + wheel + &quot; no contiene el simbolo &quot; + color + &quot;.&quot; + &quot;\nElige un color que pertenezca a esa rueda.&quot;);</span>
+<span class="nc" id="L599">            return;</span>
+        }
+
+<span class="nc" id="L602">        showJackpotIfNew(wasJackpot);</span>
+
+<span class="nc" id="L604">        JOptionPane.showMessageDialog(null, &quot;Simbolo &quot; + color + &quot; seleccionado en la rueda &quot; + wheel + &quot;.&quot; + &quot;\nObserva su apariencia en la ventana grafica.&quot;, &quot;Slot Machine Pro - Simbolo seleccionado&quot;, JOptionPane.INFORMATION_MESSAGE);</span>
+<span class="nc" id="L605">    }</span>
+
+    /**
+     * Requests and validates a wheel position. A canceled request
+     * or an invalid value returns -1 without modifying the machine.
+     *
+
+     * @param action description of the requested action
+     * @return selected wheel position, or -1 when unavailable
+     */
+    private int requestWheelPosition(String action)
+    {
+<span class="nc" id="L617">        int total = machine.wheels();</span>
+<span class="nc bnc" id="L618" title="All 2 branches missed.">        if(total == 0){</span>
+<span class="nc" id="L619">            showError(&quot;No hay ruedas en la maquina. Agrega una rueda primero.&quot;);</span>
+<span class="nc" id="L620">            return -1;</span>
+        }
+
+<span class="nc" id="L623">        String input = JOptionPane.showInputDialog(&quot;Numero de rueda para &quot; + action + &quot; (1-&quot; + total + &quot;):&quot;);</span>
+<span class="nc bnc" id="L624" title="All 2 branches missed.">        if(input == null){</span>
+<span class="nc" id="L625">            return -1;</span>
+        }
+
+        int position;
+        try{
+<span class="nc" id="L630">            position = Integer.parseInt(input.trim());</span>
+        }
+<span class="nc" id="L632">        catch(NumberFormatException e){</span>
+<span class="nc" id="L633">            showError(&quot;Ingresa un numero entero valido para la rueda.&quot;);</span>
+<span class="nc" id="L634">            return -1;</span>
+<span class="nc" id="L635">        }</span>
+
+<span class="nc bnc" id="L637" title="All 4 branches missed.">        if(position &lt; 1 || position &gt; total){</span>
+<span class="nc" id="L638">            showError(&quot;La rueda debe estar entre 1 y &quot; + total + &quot;.&quot;);</span>
+<span class="nc" id="L639">            return -1;</span>
+        }
+
+<span class="nc" id="L642">        return position;</span>
+    }
+
+    /**
+     * Shows a color selection list. Returns null when canceled.
+     *
+     * @param colors colors offered to the player
+     * @param message explanation shown in the dialog
+     * @param title dialog title
+     * @return selected color, or null on cancellation
+     */
+    private String chooseColor(String[] colors, String message, String title)
+    {
+<span class="nc bnc" id="L655" title="All 2 branches missed.">        if(colors.length == 0){</span>
+<span class="nc" id="L656">            return null;</span>
+        }
+
+<span class="nc" id="L659">        Object selected = JOptionPane.showInputDialog(null, message, title, JOptionPane.QUESTION_MESSAGE, null, colors, colors[0]);</span>
+
+<span class="nc bnc" id="L661" title="All 2 branches missed.">        if(selected == null){</span>
+<span class="nc" id="L662">            return null;</span>
+        }
+<span class="nc" id="L664">        return selected.toString();</span>
+    }
+
+    /**
+     * Returns distinct colors present anywhere in the machine.
+     * The public model exposes the aggregated symbol list,
+     * not the individual symbol lists for each wheel.
+     *
+
+     * @return available distinct colors, preserving their order
+     */
+    private String[] existingColors()
+    {
+<span class="nc" id="L677">        String[] all = machine.symbols();</span>
+<span class="nc" id="L678">        String[] unique = new String[all.length];</span>
+<span class="nc" id="L679">        int count = 0;</span>
+
+<span class="nc bnc" id="L681" title="All 2 branches missed.">        for(int i = 0; i &lt; all.length; i++){</span>
+<span class="nc" id="L682">            boolean found = false;</span>
+<span class="nc bnc" id="L683" title="All 2 branches missed.">            for(int j = 0; j &lt; count; j++){</span>
+<span class="nc bnc" id="L684" title="All 2 branches missed.">                if(unique[j].equals(all[i])){</span>
+<span class="nc" id="L685">                    found = true;</span>
+<span class="nc" id="L686">                    break;</span>
+                }
+            }
+<span class="nc bnc" id="L689" title="All 2 branches missed.">            if(!found){</span>
+<span class="nc" id="L690">                unique[count] = all[i];</span>
+<span class="nc" id="L691">                count++;</span>
+            }
+        }
+
+<span class="nc" id="L695">        String[] result = new String[count];</span>
+<span class="nc bnc" id="L696" title="All 2 branches missed.">        for(int i = 0; i &lt; count; i++){</span>
+<span class="nc" id="L697">            result[i] = unique[i];</span>
+        }
+<span class="nc" id="L699">        return result;</span>
+    }
+
+    /**
+     * Groups the existing configuration action and a read-only
+     * display of the current machine state.
+     */
+    private void showConfigurationMenu()
+    {
+<span class="nc" id="L708">        String[] options = {&quot;Configurar simbolos&quot;, &quot;Consultar estado&quot;, &quot;Volver&quot;};</span>
+
+<span class="nc" id="L710">        boolean inMenu = true;</span>
+
+<span class="nc bnc" id="L712" title="All 2 branches missed.">        while(inMenu){</span>
+<span class="nc" id="L713">            int choice = JOptionPane.showOptionDialog(null, &quot;Configuracion actual: &quot; + buildStatus(machine.configuration()) + &quot;\n\nSelecciona una accion:&quot;, &quot;Slot Machine Pro - Consultar y configurar&quot;, JOptionPane.DEFAULT_OPTION, JOptionPane.PLAIN_MESSAGE, null, options, options[0]);</span>
+
+<span class="nc bnc" id="L715" title="All 3 branches missed.">            switch(choice){</span>
+                case 0:
+<span class="nc" id="L717">                    configureSymbols();</span>
+<span class="nc" id="L718">                    break;</span>
+
+                case 1:
+<span class="nc" id="L721">                    showMachineStatus();</span>
+<span class="nc" id="L722">                    break;</span>
+
+                default:
+<span class="nc" id="L725">                    inMenu = false;</span>
+                    break;
+            }
+<span class="nc" id="L728">        }</span>
+<span class="nc" id="L729">    }</span>
+
+    /**
+     * Spins one wheel by the requested number of steps and announces
+     * a newly achieved jackpot, preserving the original spin behavior.
+     */
+    private void spinWheel()
+    {
+<span class="nc" id="L737">        String wheelStr = JOptionPane.showInputDialog(&quot;Numero de rueda (1-&quot; + machine.wheels() + &quot;):&quot;);</span>
+        
+<span class="nc bnc" id="L739" title="All 2 branches missed.">        if(wheelStr == null){ return; }</span>
+
+<span class="nc" id="L741">        String stepsStr = JOptionPane.showInputDialog(&quot;Numero de pasos:&quot;);</span>
+<span class="nc bnc" id="L742" title="All 2 branches missed.">        if(stepsStr == null){ return; }</span>
+
+        try
+        {
+<span class="nc" id="L746">            int wheel = Integer.parseInt(wheelStr.trim());</span>
+<span class="nc" id="L747">            int steps = Integer.parseInt(stepsStr.trim());</span>
+<span class="nc" id="L748">            boolean wasJackpot = machine.isJackpot();</span>
+<span class="nc" id="L749">            machine.spin(wheel, steps);</span>
+
+<span class="nc bnc" id="L751" title="All 2 branches missed.">            if(!machine.ok()){</span>
+<span class="nc" id="L752">                showError(&quot;Posicion o pasos invalidos.&quot;);</span>
+            }
+            else{
+<span class="nc" id="L755">                showJackpotIfNew(wasJackpot);</span>
+            }
+        }
+<span class="nc" id="L758">        catch(NumberFormatException e)</span>
+        {
+<span class="nc" id="L760">            showError(&quot;Ingresa numeros validos.&quot;);</span>
+<span class="nc" id="L761">        }</span>
+<span class="nc" id="L762">    }</span>
+
+    /**
+     * Locks a wheel using the operation from the original menu.
+     */
+    private void lockWheel()
+    {
+<span class="nc" id="L769">        String wheelStr = JOptionPane.showInputDialog(&quot;Numero de rueda a fijar (1-&quot; + machine.wheels() + &quot;):&quot;);</span>
+        
+<span class="nc bnc" id="L771" title="All 2 branches missed.">        if(wheelStr == null){ return; }</span>
+
+        try
+        {
+<span class="nc" id="L775">            machine.lock(Integer.parseInt(wheelStr.trim()));</span>
+<span class="nc bnc" id="L776" title="All 2 branches missed.">            if(!machine.ok()){</span>
+<span class="nc" id="L777">                showError(&quot;No se pudo fijar la rueda seleccionada.&quot;);</span>
+            }
+        }
+<span class="nc" id="L780">        catch(NumberFormatException e)</span>
+        {
+<span class="nc" id="L782">            showError(&quot;Ingresa un numero valido.&quot;);</span>
+<span class="nc" id="L783">        }</span>
+<span class="nc" id="L784">    }</span>
+
+    /**
+     * Unlocks a wheel using the operation from the original menu.
+     */
+    private void unlockWheel()
+    {
+<span class="nc" id="L791">        String wheelStr = JOptionPane.showInputDialog(&quot;Numero de rueda a soltar (1-&quot; + machine.wheels() + &quot;):&quot;);</span>
+<span class="nc bnc" id="L792" title="All 2 branches missed.">        if(wheelStr == null){ return; }</span>
+
+        try
+        {
+<span class="nc" id="L796">            machine.unlock(Integer.parseInt(wheelStr.trim()));</span>
+<span class="nc bnc" id="L797" title="All 2 branches missed.">            if(!machine.ok()){</span>
+<span class="nc" id="L798">                showError(&quot;No se pudo soltar la rueda seleccionada.&quot;);</span>
+            }
+        }
+<span class="nc" id="L801">        catch(NumberFormatException e)</span>
+        {
+<span class="nc" id="L803">            showError(&quot;Ingresa un numero valido.&quot;);</span>
+<span class="nc" id="L804">        }</span>
+<span class="nc" id="L805">    }</span>
+
+    /**
+     * Exchanges two wheels using the operation from the original menu.
+     * After a successful swap, moves the graphical elements of the
+     * existing wheels to match their new logical positions.
+     */
+    private void swapWheels()
+    {
+<span class="nc" id="L814">        String firstStr = JOptionPane.showInputDialog(&quot;Primera rueda (1-&quot; + machine.wheels() + &quot;):&quot;);</span>
+        
+<span class="nc bnc" id="L816" title="All 2 branches missed.">        if(firstStr == null){ return; }</span>
+
+<span class="nc" id="L818">        String secondStr = JOptionPane.showInputDialog(&quot;Segunda rueda (1-&quot; + machine.wheels() + &quot;):&quot;);</span>
+        
+<span class="nc bnc" id="L820" title="All 2 branches missed.">        if(secondStr == null){ return; }</span>
+
+        try
+        {
+<span class="nc" id="L824">            machine.swap(Integer.parseInt(firstStr.trim()), Integer.parseInt(secondStr.trim()));</span>
+            
+<span class="nc bnc" id="L826" title="All 2 branches missed.">            if(!machine.ok()){</span>
+<span class="nc" id="L827">                showError(&quot;No se puede intercambiar.&quot;);</span>
+            }
+            else{
+<span class="nc" id="L830">                machine.makeInvisible();</span>
+<span class="nc" id="L831">                machine.synchronizeWheelPositions();</span>
+<span class="nc" id="L832">                machine.makeVisible();</span>
+            }
+        }
+<span class="nc" id="L835">        catch(NumberFormatException e)</span>
+        {
+<span class="nc" id="L837">            showError(&quot;Ingresa numeros validos.&quot;);</span>
+<span class="nc" id="L838">        }</span>
+<span class="nc" id="L839">    }</span>
+
+    /**
+     * Configures one visible symbol per wheel, using the existing
+     * spin(String[]) operation. The menu requires exactly as many
+     * nonempty colors as wheels so that an incomplete user input is
+     * not silently interpreted as a partial configuration.
+     *
+     * SlotMachine decides which colors belong to each wheel. If a
+     * requested color is unavailable, that operation may already have
+     * updated other wheels; Main does not duplicate the model state.
+     */
+    private void configureSymbols()
+    {
+<span class="nc" id="L853">        int total = machine.wheels();</span>
+<span class="nc bnc" id="L854" title="All 2 branches missed.">        if(total == 0){</span>
+<span class="nc" id="L855">            showError(&quot;No hay ruedas para configurar. Agrega una rueda primero.&quot;);</span>
+<span class="nc" id="L856">            return;</span>
+        }
+
+<span class="nc" id="L859">        String configInput = JOptionPane.showInputDialog(&quot;CONFIGURAR SIMBOLOS\n&quot; + &quot;\nConfiguracion actual: &quot; + buildStatus(machine.configuration()) + &quot;\nRuedas instaladas: &quot; + total + &quot;\nColores existentes en la maquina: &quot; + String.join(&quot;, &quot;, existingColors()) + &quot;\n\nIngresa exactamente &quot; + total + &quot; colores separados por comas, uno por rueda.&quot; + &quot;\nEjemplo: red,red,red&quot; + &quot;\nCada color debe existir en su rueda correspondiente.&quot;);</span>
+        
+<span class="nc bnc" id="L861" title="All 2 branches missed.">        if(configInput == null){</span>
+<span class="nc" id="L862">            return;</span>
+        }
+
+<span class="nc" id="L865">        String[] parts = configInput.split(&quot;,&quot;, -1);</span>
+<span class="nc bnc" id="L866" title="All 2 branches missed.">        if(parts.length != total){</span>
+<span class="nc" id="L867">            showError(&quot;Debes ingresar exactamente &quot; + total + &quot; colores, uno por cada rueda.&quot;);</span>
+<span class="nc" id="L868">            return;</span>
+        }
+
+<span class="nc" id="L871">        String[] colors = new String[total];</span>
+<span class="nc bnc" id="L872" title="All 2 branches missed.">        for(int i = 0; i &lt; total; i++){</span>
+<span class="nc" id="L873">            colors[i] = parts[i].trim();</span>
+<span class="nc bnc" id="L874" title="All 2 branches missed.">            if(colors[i].isEmpty()){</span>
+<span class="nc" id="L875">                showError(&quot;No puedes dejar colores vacios. Revisa la rueda &quot; + (i + 1) + &quot;.&quot;);</span>
+<span class="nc" id="L876">                return;</span>
+            }
+        }
+
+<span class="nc" id="L880">        boolean wasJackpot = machine.isJackpot();</span>
+<span class="nc" id="L881">        machine.spin(colors);</span>
+<span class="nc bnc" id="L882" title="All 2 branches missed.">        if(!machine.ok()){</span>
+<span class="nc" id="L883">            showError(&quot;Alguno de los colores no existe en la rueda indicada.&quot; + &quot;\nEs posible que otras ruedas si hayan cambiado.&quot; + &quot;\nConfiguracion actual: &quot; + buildStatus(machine.configuration()));</span>
+        }
+        else{
+<span class="nc" id="L886">            showJackpotIfNew(wasJackpot);</span>
+        }
+<span class="nc" id="L888">    }</span>
+
+    /**
+     * Announces a jackpot only when a successful operation changes
+     * the machine from a nonwinning to a winning configuration.
+     * This prevents duplicate dialogs when an existing jackpot has
+     * not changed or when a symbol is reselected without new victory.
+     *
+
+     * @param wasJackpot true if the previous configuration was winning
+     */
+    private void showJackpotIfNew(boolean wasJackpot)
+    {
+<span class="nc bnc" id="L901" title="All 4 branches missed.">        if(!wasJackpot &amp;&amp; machine.isJackpot()){</span>
+<span class="nc" id="L902">            showJackpot();</span>
+        }
+<span class="nc" id="L904">    }</span>
+
+    /**
+     * Shows the original jackpot message without extra animations.
+     */
+    private void showJackpot()
+    {
+<span class="nc" id="L911">        JOptionPane.showMessageDialog(null, &quot;¡JACKPOT! Todas las ruedas coinciden.&quot;, &quot;Slot Machine Pro&quot;, JOptionPane.INFORMATION_MESSAGE);</span>
+<span class="nc" id="L912">    }</span>
+
+    /**
+     * Shows an operation or input error.
+     *
+     * @param message explanation of the error
+     */
+    private void showError(String message)
+    {
+<span class="nc" id="L921">        JOptionPane.showMessageDialog(null, message, &quot;Error&quot;, JOptionPane.WARNING_MESSAGE);</span>
+<span class="nc" id="L922">    }</span>
+
+    /**
+     * Shows a detailed, read-only summary of the model state and a
+     * legend for the graphical indicators of specialized objects.
+     * No wheel type is inferred from its color or stored in Main.
+     */
+    private void showMachineStatus()
+    {
+<span class="nc" id="L931">        StringBuilder status = new StringBuilder();</span>
+<span class="nc" id="L932">        status.append(&quot;SLOT MACHINE PRO - ESTADO\n\n&quot;);</span>
+<span class="nc" id="L933">        status.append(&quot;Ruedas instaladas: &quot;).append(machine.wheels());</span>
+<span class="nc" id="L934">        status.append(&quot; / 3 (limite exclusivo del menu visual)\n&quot;);</span>
+<span class="nc" id="L935">        status.append(&quot;Simbolos totales: &quot;).append(machine.symbols().length);</span>
+<span class="nc" id="L936">        status.append(&quot;\nConfiguracion: &quot;).append(buildStatus(machine.configuration()));</span>
+<span class="nc bnc" id="L937" title="All 2 branches missed.">        status.append(&quot;\nJackpot: &quot;).append(machine.isJackpot() ? &quot;SI&quot; : &quot;NO&quot;);</span>
+<span class="nc" id="L938">        status.append(&quot;\n\nTIPOS DE RUEDA (color de marco)&quot;);</span>
+<span class="nc" id="L939">        status.append(&quot;\nNormal: blanco&quot;);</span>
+<span class="nc" id="L940">        status.append(&quot;\nLefty: amarillo (copia su vecino izquierdo)&quot;);</span>
+<span class="nc" id="L941">        status.append(&quot;\nRebel: naranja (restricciones de operaciones)&quot;);</span>
+<span class="nc" id="L942">        status.append(&quot;\n\nTIPOS DE SIMBOLO (marcador)&quot;);</span>
+<span class="nc" id="L943">        status.append(&quot;\nNormal: sin marcador&quot;);</span>
+<span class="nc" id="L944">        status.append(&quot;\nEphemeral: magenta (disminuye de tamano al girar)&quot;);</span>
+<span class="nc" id="L945">        status.append(&quot;\nShy: azul (alterna visibilidad al seleccionarse)&quot;);</span>
+<span class="nc" id="L946">        status.append(&quot;\nPulsing: verde (alterna tamano al seleccionarse)&quot;);</span>
+<span class="nc" id="L947">        status.append(&quot;\n\nColores presentes: &quot;);</span>
+<span class="nc" id="L948">        String[] colors = existingColors();</span>
+<span class="nc bnc" id="L949" title="All 2 branches missed.">        status.append(colors.length == 0 ? &quot;ninguno&quot; : String.join(&quot;, &quot;, colors));</span>
+
+<span class="nc" id="L951">        JOptionPane.showMessageDialog(null, status.toString(), &quot;Slot Machine Pro - Estado&quot;, JOptionPane.INFORMATION_MESSAGE);</span>
+<span class="nc" id="L952">    }</span>
+
+    /**
+     * Formats the current symbol colors in wheel order.
+     * Empty wheels are shown as '?' in the summary.
+     *
+     * @param config current symbol configuration
+     * @return a readable list of the current symbols
+     */
+    private String buildStatus(String[] config)
+    {
+<span class="nc bnc" id="L963" title="All 4 branches missed.">        if(config == null || config.length == 0){</span>
+<span class="nc" id="L964">            return &quot;(sin ruedas)&quot;;</span>
+        }
+
+<span class="nc" id="L967">        StringBuilder sb = new StringBuilder(&quot;[&quot;);</span>
+<span class="nc bnc" id="L968" title="All 2 branches missed.">        for(int i = 0; i &lt; config.length; i++)</span>
+        {
+<span class="nc bnc" id="L970" title="All 2 branches missed.">            if(i &gt; 0){</span>
+<span class="nc" id="L971">                sb.append(&quot; | &quot;);</span>
+            }
+<span class="nc bnc" id="L973" title="All 2 branches missed.">            sb.append(config[i] != null ? config[i] : &quot;?&quot;);</span>
+        }
+<span class="nc" id="L975">        sb.append(&quot;]&quot;);</span>
+<span class="nc" id="L976">        return sb.toString();</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

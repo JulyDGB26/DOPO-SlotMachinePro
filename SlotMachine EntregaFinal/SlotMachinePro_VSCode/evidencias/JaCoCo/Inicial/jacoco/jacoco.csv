@@ -1,0 +1,24 @@
+GROUP,PACKAGE,CLASS,INSTRUCTION_MISSED,INSTRUCTION_COVERED,BRANCH_MISSED,BRANCH_COVERED,LINE_MISSED,LINE_COVERED,COMPLEXITY_MISSED,COMPLEXITY_COVERED,METHOD_MISSED,METHOD_COVERED
+SlotMachinePro - Cierre Proyecto Inicial,default,PulsingSymbol,0,27,0,4,0,10,0,7,0,5
+SlotMachinePro - Cierre Proyecto Inicial,default,Circle,68,104,8,4,24,37,10,11,6,9
+SlotMachinePro - Cierre Proyecto Inicial,default,Wheel,81,576,12,54,20,151,13,47,2,25
+SlotMachinePro - Cierre Proyecto Inicial,default,LeftyWheel,4,23,1,5,2,9,2,4,1,2
+SlotMachinePro - Cierre Proyecto Inicial,default,SlotMachineProGUI.new ActionListener() {...},10,0,0,0,2,0,2,0,2,0
+SlotMachinePro - Cierre Proyecto Inicial,default,SlotMachineProGUI.new ActionListener() {...},10,0,0,0,2,0,2,0,2,0
+SlotMachinePro - Cierre Proyecto Inicial,default,ShySymbol,0,23,0,2,0,8,0,6,0,5
+SlotMachinePro - Cierre Proyecto Inicial,default,SlotMachineProGUI.new ActionListener() {...},10,0,0,0,2,0,2,0,2,0
+SlotMachinePro - Cierre Proyecto Inicial,default,Symbol,24,19,2,0,8,10,4,8,3,8
+SlotMachinePro - Cierre Proyecto Inicial,default,Canvas,37,261,8,18,7,61,5,17,0,9
+SlotMachinePro - Cierre Proyecto Inicial,default,SlotMachineProGUI.new ActionListener() {...},10,0,0,0,2,0,2,0,2,0
+SlotMachinePro - Cierre Proyecto Inicial,default,Rectangle,68,109,8,4,24,40,10,12,6,10
+SlotMachinePro - Cierre Proyecto Inicial,default,SlotMachineProGUI.new Runnable() {...},11,0,0,0,4,0,2,0,2,0
+SlotMachinePro - Cierre Proyecto Inicial,default,Triangle,147,77,10,2,34,32,13,9,7,9
+SlotMachinePro - Cierre Proyecto Inicial,default,SlotMachine,43,1048,18,118,16,238,19,79,2,28
+SlotMachinePro - Cierre Proyecto Inicial,default,SlotMachineProGUI.new ActionListener() {...},10,0,0,0,2,0,2,0,2,0
+SlotMachinePro - Cierre Proyecto Inicial,default,SlotMachineProGUI.new WindowAdapter() {...},10,0,0,0,2,0,2,0,2,0
+SlotMachinePro - Cierre Proyecto Inicial,default,Canvas.CanvasPane,0,16,0,0,0,3,0,2,0,2
+SlotMachinePro - Cierre Proyecto Inicial,default,SlotMachineContest,57,49,9,5,14,14,6,5,1,3
+SlotMachinePro - Cierre Proyecto Inicial,default,RebelWheel,2,10,0,0,1,5,1,4,1,4
+SlotMachinePro - Cierre Proyecto Inicial,default,SlotMachineProGUI,1573,0,155,0,396,0,118,0,36,0
+SlotMachinePro - Cierre Proyecto Inicial,default,Canvas.ShapeDescription,0,26,0,0,0,8,0,2,0,2
+SlotMachinePro - Cierre Proyecto Inicial,default,EphemeralSymbol,0,28,0,2,0,10,0,6,0,5

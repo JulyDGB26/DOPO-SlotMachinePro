@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>SlotMachineContest.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SlotMachinePro - Cierre Proyecto Inicial</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">SlotMachineContest.java</span></div><h1>SlotMachineContest.java</h1><pre class="source lang-java linenums">/**
+ * Represents the solver and simulator for the Slot Machine contest problem.
+ *
+ * This class is responsible for computing solutions and using SlotMachine
+ * as a simulation tool. It does not contain the machine logic itself.
+ */
+public class SlotMachineContest
+{
+    /**
+     * Creates a new contest solver.
+     */
+    public SlotMachineContest()
+<span class="fc" id="L13">    {</span>
+
+<span class="fc" id="L15">    }</span>
+
+    /**
+     * Computes the sequence of movements required
+     * to solve the slot machine contest problem.
+     *
+     * The solution moves every wheel to the first
+     * symbol position.
+     *
+     * @param n number of wheels and symbols
+     * @return sequence of movements [wheel, steps]
+     */
+    public static int[][] solve(int n)
+    {
+<span class="fc bfc" id="L29" title="All 2 branches covered.">        if(n &lt;= 0){</span>
+<span class="fc" id="L30">            return new int[0][0];</span>
+        }
+    
+<span class="fc" id="L33">        int[][] movements = new int[n][2];</span>
+    
+<span class="fc bfc" id="L35" title="All 2 branches covered.">        for(int i = 0; i &lt; n; i++){</span>
+<span class="fc" id="L36">            int wheel = i + 1;</span>
+    
+<span class="fc" id="L38">            int position = i;</span>
+    
+<span class="fc" id="L40">            int steps = (n - position) % n;</span>
+    
+<span class="fc" id="L42">            movements[i][0] = wheel;</span>
+<span class="fc" id="L43">            movements[i][1] = steps;</span>
+        }
+    
+<span class="fc" id="L46">        return movements;</span>
+    }
+
+    /**
+     * Simulates the solution of the contest problem visually.
+     *
+     * @param n number of wheels and symbols
+     */
+    public static void simulate(int n)
+    {
+<span class="pc bpc" id="L56" title="1 of 2 branches missed.">        if(n &lt;= 0)</span>
+        {
+<span class="fc" id="L58">            return;</span>
+        }
+
+<span class="nc" id="L61">        SlotMachine machine = new SlotMachine(n);</span>
+
+<span class="nc" id="L63">        prepContestConfig(machine, n);</span>
+
+<span class="nc" id="L65">        machine.makeVisible();</span>
+
+<span class="nc" id="L67">        int[][] solution = solve(n);</span>
+
+<span class="nc bnc" id="L69" title="All 2 branches missed.">        for(int i = 0; i &lt; solution.length; i++)</span>
+        {
+<span class="nc" id="L71">            int wheel = solution[i][0];</span>
+<span class="nc" id="L72">            int steps = solution[i][1];</span>
+
+<span class="nc bnc" id="L74" title="All 2 branches missed.">            if(steps &gt; 0)</span>
+            {
+<span class="nc" id="L76">                machine.spin(wheel, steps);</span>
+            }
+        }
+<span class="nc" id="L79">    }</span>
+
+    /**
+     * Prepares a slot machine with the initial
+     * configuration used by the contest simulation.
+     *
+     * @param machine machine to configure
+     * @param n number of wheels
+     */
+    private static void prepContestConfig(SlotMachine machine, int n)
+    {
+<span class="nc bnc" id="L90" title="All 2 branches missed.">        for(int wheel = 1; wheel &lt;= n; wheel++){</span>
+<span class="nc bnc" id="L91" title="All 2 branches missed.">            if(wheel &gt; 1){</span>
+<span class="nc" id="L92">                machine.spin(wheel, wheel - 1);</span>
+            }
+        }
+<span class="nc" id="L95">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

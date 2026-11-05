@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PulsingSymbol.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SlotMachinePro - Cierre Proyecto Inicial</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">PulsingSymbol.java</span></div><h1>PulsingSymbol.java</h1><pre class="source lang-java linenums">/**
+ * Represents a pulsing symbol in a slot machine wheel.
+ *
+ * A pulsing symbol alternates between an expanded and a
+ * contracted visual size every time it is selected.
+ *
+ * The symbol preserves its color and logical identity
+ * regardless of its current visual size.
+ *
+ * @author Julian Gomez Boada
+ * @version Ciclo4-MC4
+ */
+public class PulsingSymbol extends Symbol
+{
+    private boolean expanded;
+
+    private static final int EXPANDED_SIZE = 70;
+    private static final int CONTRACTED_SIZE = 45;
+
+    /**
+     * Creates a pulsing symbol with the specified color.
+     *
+     * The symbol starts in its expanded state.
+     *
+     * @param color visual color of the symbol
+     */
+    public PulsingSymbol(String color)
+    {
+<span class="fc" id="L29">        super(color);</span>
+<span class="fc" id="L30">        expanded = true;</span>
+<span class="fc" id="L31">    }</span>
+
+    /**
+     * Alternates the size state of this symbol whenever
+     * it is selected in its wheel.
+     */
+    @Override
+    public void select()
+    {
+<span class="fc bfc" id="L40" title="All 2 branches covered.">        expanded = !expanded;</span>
+<span class="fc" id="L41">    }</span>
+
+    /**
+     * Returns the visual diameter corresponding to the
+     * current pulsing state.
+     *
+     * @return expanded or contracted symbol diameter
+     */
+    @Override
+    public int getSize()
+    {
+<span class="fc bfc" id="L52" title="All 2 branches covered.">        if(expanded){</span>
+<span class="fc" id="L53">            return EXPANDED_SIZE;</span>
+        }
+
+<span class="fc" id="L56">        return CONTRACTED_SIZE;</span>
+    }
+
+    /**
+     * Indicates that a pulsing symbol has a visual marker.
+     *
+     * @return true
+     */
+    @Override
+    public boolean hasMarker()
+    {
+<span class="fc" id="L67">        return true;</span>
+    }
+
+    /**
+     * Returns the color used to identify pulsing symbols.
+     *
+     * @return green marker color
+     */
+    @Override
+    public String markerColor()
+    {
+<span class="fc" id="L78">        return &quot;green&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

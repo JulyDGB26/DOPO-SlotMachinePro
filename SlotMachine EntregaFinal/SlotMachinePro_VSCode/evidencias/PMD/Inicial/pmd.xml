@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<pmd xmlns="http://pmd.sourceforge.net/report/2.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://pmd.sourceforge.net/report/2.0.0 https://pmd.github.io/schema/report_2_0_0.xsd" version="7.17.0" timestamp="2026-10-24T14:58:20.248">
+<file name="C:\Dev\SlotMachinePro_VSCode\src\main\java\Canvas.java">
+<violation beginline="148" endline="150" begincolumn="11" endcolumn="10" rule="EmptyCatchBlock" ruleset="Error Prone" class="Canvas" method="wait" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.17.0/pmd_rules_java_errorprone.html#emptycatchblock" priority="3">
+Avoid empty catch blocks
+</violation>
+</file>
+<file name="C:\Dev\SlotMachinePro_VSCode\src\main\java\SlotMachine.java">
+<violation beginline="17" endline="17" begincolumn="21" endcolumn="28" rule="UnusedPrivateField" ruleset="Best Practices" class="SlotMachine" variable="visible" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.17.0/pmd_rules_java_bestpractices.html#unusedprivatefield" priority="3">
+Avoid unused private fields such as 'visible'.
+</violation>
+</file>
+<file name="C:\Dev\SlotMachinePro_VSCode\src\main\java\SlotMachineProGUI.java">
+<violation beginline="94" endline="94" begincolumn="34" endcolumn="40" rule="UnnecessaryFullyQualifiedName" ruleset="Code Style" class="SlotMachineProGUI" method="prepareView" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.17.0/pmd_rules_java_codestyle.html#unnecessaryfullyqualifiedname" priority="4">
+Unnecessary qualifier 'JFrame': 'WindowConstants::DO_NOTHING_ON_CLOSE' is already in scope because it is inherited by an enclosing type
+</violation>
+</file>
+<file name="C:\Dev\SlotMachinePro_VSCode\src\main\java\Wheel.java">
+<violation beginline="71" endline="71" begincolumn="37" endcolumn="46" rule="UselessParentheses" ruleset="Code Style" class="Wheel" method="Wheel" externalInfoUrl="https://docs.pmd-code.org/pmd-doc-7.17.0/pmd_rules_java_codestyle.html#uselessparentheses" priority="4">
+Useless parentheses around `sx + 75`.
+</violation>
+</file>
+</pmd>

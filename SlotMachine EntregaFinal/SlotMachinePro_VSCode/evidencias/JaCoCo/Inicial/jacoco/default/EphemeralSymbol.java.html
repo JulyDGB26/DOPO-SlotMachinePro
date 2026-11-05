@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>EphemeralSymbol.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SlotMachinePro - Cierre Proyecto Inicial</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">EphemeralSymbol.java</span></div><h1>EphemeralSymbol.java</h1><pre class="source lang-java linenums">/**
+ * Represents an ephemeral symbol in a slot machine wheel.
+ *
+ * An ephemeral symbol reduces its visual size every time it becomes
+ * selected as a consequence of a wheel spin. Its size never becomes
+ * smaller than the minimum size used to represent a point.
+ *
+ * @author Julian Gomez Boada
+ * @version Ciclo4-MC3
+ */
+public class EphemeralSymbol extends Symbol
+{
+    private int size;
+
+    private static final int INITIAL_SIZE = 70;
+    private static final int SIZE_STEP = 10;
+    private static final int POINT_SIZE = 2;
+
+    /**
+     * Creates an ephemeral symbol with the specified color.
+     *
+     * @param color visual color associated with the symbol
+     */
+    public EphemeralSymbol(String color)
+    {
+<span class="fc" id="L26">        super(color);</span>
+<span class="fc" id="L27">        size = INITIAL_SIZE;</span>
+<span class="fc" id="L28">    }</span>
+
+    /**
+     * Reduces the size of this symbol after a spin.
+     *
+     * Once the minimum point size is reached, subsequent spins
+     * preserve that minimum size.
+     */
+    @Override
+    public void spin()
+    {
+<span class="fc" id="L39">        size = size - SIZE_STEP;</span>
+
+<span class="fc bfc" id="L41" title="All 2 branches covered.">        if(size &lt; POINT_SIZE)</span>
+        {
+<span class="fc" id="L43">            size = POINT_SIZE;</span>
+        }
+<span class="fc" id="L45">    }</span>
+
+    /**
+     * Returns the current visual size of this ephemeral symbol.
+     *
+     * @return current symbol diameter
+     */
+    @Override
+    public int getSize()
+    {
+<span class="fc" id="L55">        return size;</span>
+    }
+    
+    /**
+     * Indicates that an ephemeral symbol requires
+     * a visual identification marker.
+     *
+     * @return true
+     */
+    @Override
+    public boolean hasMarker()
+    {
+<span class="fc" id="L67">        return true;</span>
+    }
+    
+    /**
+     * Returns the identification color of ephemeral symbols.
+     *
+     * @return magenta marker color
+     */
+    @Override
+    public String markerColor()
+    {
+<span class="fc" id="L78">        return &quot;magenta&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

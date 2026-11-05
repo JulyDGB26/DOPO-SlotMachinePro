@@ -1,0 +1,565 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Wheel.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SlotMachinePro - Cierre Proyecto Inicial</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Wheel.java</span></div><h1>Wheel.java</h1><pre class="source lang-java linenums">/**
+ * Represents a wheel in the slot machine.
+ * Each wheel has a slot-frame window, a colored symbol circle,
+ * and a lock indicator bar below the frame.
+ *
+ * @author Julian Gomez Boada - Julian Carrero Carranza
+ * @version Ciclo2-visual (05/09/2026)
+ */
+public class Wheel
+{
+    private Symbol[] symbols;
+    private int currentSymbol;
+    
+    private Circle    circle;
+    private Rectangle slotFrame;
+    private Rectangle lockBar;
+    private boolean   locked;
+    private boolean   visible;
+    
+    private Triangle symbolMarker;
+    private int circleOffset;
+    private int slotIndex;
+
+    // Horizontal slot origin and spacing (pixels)
+    private static final int SLOT_ORIGIN  = 55;
+    private static final int SLOT_SPACING = 130;
+
+    /**
+     * Creates a wheel at the given 0-based slot index.
+     *
+     * @param slotIndex 0-based position of this wheel in the machine
+     */
+    public Wheel(int slotIndex)
+<span class="fc" id="L34">    {</span>
+<span class="fc" id="L35">        symbols = new Symbol[0];</span>
+<span class="fc" id="L36">        currentSymbol = 0;</span>
+<span class="fc" id="L37">        locked  = false;</span>
+<span class="fc" id="L38">        visible = false;</span>
+<span class="fc" id="L39">        circleOffset = 0;</span>
+<span class="fc" id="L40">        this.slotIndex = slotIndex;</span>
+
+<span class="fc" id="L42">        int sx = SLOT_ORIGIN + SLOT_SPACING * slotIndex;</span>
+
+        // Slot frame: white window behind the symbol
+        // Rectangle default: x=70, y=15
+<span class="fc" id="L46">        slotFrame = new Rectangle();</span>
+<span class="fc" id="L47">        slotFrame.changeColor(&quot;white&quot;);</span>
+<span class="fc" id="L48">        slotFrame.changeSize(145, 90);</span>
+<span class="fc" id="L49">        slotFrame.moveHorizontal(sx - 70);</span>
+<span class="fc" id="L50">        slotFrame.moveVertical(57);        // target y=72</span>
+
+        // Symbol circle: centered inside slotFrame (diameter 70)
+        // Circle default: x=20, y=15
+<span class="fc" id="L54">        circle = new Circle();</span>
+<span class="fc" id="L55">        circle.changeColor(&quot;white&quot;);</span>
+<span class="fc" id="L56">        circle.changeSize(70);</span>
+<span class="fc" id="L57">        circle.moveHorizontal(sx - 10);   // target x=sx+10; from 20: (sx+10)-20=sx-10</span>
+<span class="fc" id="L58">        circle.moveVertical(94);           // target y=109; from 15: 109-15=94</span>
+
+        // Lock indicator: green = unlocked, red = locked
+<span class="fc" id="L61">        lockBar = new Rectangle();</span>
+<span class="fc" id="L62">        lockBar.changeColor(&quot;green&quot;);</span>
+<span class="fc" id="L63">        lockBar.changeSize(16, 90);</span>
+<span class="fc" id="L64">        lockBar.moveHorizontal(sx - 70);</span>
+<span class="fc" id="L65">        lockBar.moveVertical(207);         // target y=222; from 15: 207</span>
+        
+        // Symbol type identification marker.
+<span class="fc" id="L68">        symbolMarker = new Triangle();</span>
+<span class="fc" id="L69">        symbolMarker.changeColor(&quot;green&quot;);</span>
+<span class="fc" id="L70">        symbolMarker.changeSize(10, 12);</span>
+<span class="fc" id="L71">        symbolMarker.moveHorizontal((sx + 75) - 140);</span>
+<span class="fc" id="L72">        symbolMarker.moveVertical(80 - 15);</span>
+<span class="fc" id="L73">    }</span>
+
+    /**
+     * Moves the existing graphical elements to a new 0-based slot.
+     * Symbol objects, selection, size, visibility and lock state
+     * are preserved. Normally called while the machine is hidden.
+     *
+     * @param newSlotIndex new 0-based position in the machine
+     */
+    public void moveToSlot(int newSlotIndex)
+    {
+<span class="nc" id="L84">        int movement = (newSlotIndex - slotIndex) * SLOT_SPACING;</span>
+
+<span class="nc bnc" id="L86" title="All 2 branches missed.">        if(movement == 0){</span>
+<span class="nc" id="L87">            return;</span>
+        }
+
+<span class="nc" id="L90">        slotFrame.moveHorizontal(movement);</span>
+<span class="nc" id="L91">        circle.moveHorizontal(movement);</span>
+<span class="nc" id="L92">        lockBar.moveHorizontal(movement);</span>
+<span class="nc" id="L93">        symbolMarker.moveHorizontal(movement);</span>
+
+<span class="nc" id="L95">        slotIndex = newSlotIndex;</span>
+<span class="nc" id="L96">    }</span>
+
+    // ── symbol management ────────────────────────────────────────────────────
+
+    /**
+     * Adds a normal symbol to this wheel.
+     *
+     * This operation preserves the original behavior
+     * of the wheel from previous cycles.
+     *
+     * @param color visual color of the new symbol
+     * @return true if the symbol was added, false otherwise
+     */
+    public boolean addSymbol(String color)
+    {
+<span class="nc" id="L111">        return addSymbol(&quot;normal&quot;, color);</span>
+    }
+    
+    /**
+     * Adds a symbol of the indicated type to this wheel.
+     *
+     * Available symbol types are normal, ephemeral, shy and pulsing.
+     *
+     * @param type symbol type
+     * @param color visual color of the new symbol
+     * @return true if the symbol was added, false otherwise
+     */
+    public boolean addSymbol(String type, String color)
+    {
+<span class="fc bfc" id="L125" title="All 2 branches covered.">        if(contains(color)){</span>
+<span class="fc" id="L126">            return false;</span>
+        }
+    
+<span class="fc" id="L129">        Symbol newSymbol = createSymbol(type, color);</span>
+    
+<span class="fc bfc" id="L131" title="All 2 branches covered.">        if(newSymbol == null){</span>
+<span class="fc" id="L132">            return false;</span>
+        }
+    
+<span class="fc" id="L135">        Symbol[] n = new Symbol[symbols.length + 1];</span>
+    
+<span class="fc bfc" id="L137" title="All 2 branches covered.">        for(int i = 0; i &lt; symbols.length; i++){</span>
+<span class="fc" id="L138">            n[i] = symbols[i];</span>
+        }
+    
+<span class="fc" id="L141">        n[symbols.length] = newSymbol;</span>
+<span class="fc" id="L142">        symbols = n;</span>
+    
+<span class="fc" id="L144">        return true;</span>
+    }
+
+    /**
+     * Removes the first occurrence of a symbol from this wheel.
+     *
+     * @param symbol color of the symbol to remove
+     * @return true if the symbol was removed, false otherwise
+     */
+    public boolean delSymbol(String symbol)
+    {
+<span class="fc" id="L155">        int pos = find(symbol);</span>
+    
+<span class="fc bfc" id="L157" title="All 2 branches covered.">        if(pos == -1){</span>
+<span class="fc" id="L158">            return false;</span>
+        }
+    
+<span class="fc" id="L161">        Symbol[] n = new Symbol[symbols.length - 1];</span>
+    
+<span class="pc bpc" id="L163" title="1 of 2 branches missed.">        for(int i = 0; i &lt; pos; i++){</span>
+<span class="nc" id="L164">            n[i] = symbols[i];</span>
+        }
+    
+<span class="fc bfc" id="L167" title="All 2 branches covered.">        for(int i = pos; i &lt; n.length; i++){</span>
+<span class="fc" id="L168">            n[i] = symbols[i + 1];</span>
+        }
+    
+<span class="fc" id="L171">        symbols = n;</span>
+    
+<span class="pc bpc" id="L173" title="1 of 2 branches missed.">        if(currentSymbol &gt;= symbols.length){</span>
+<span class="nc" id="L174">            currentSymbol = 0;</span>
+        }
+        
+<span class="fc" id="L177">        updateSymbolAppearance();</span>
+<span class="fc" id="L178">        return true;</span>
+    }
+
+    /**
+     * Positions the indicated symbol as the current symbol.
+     *
+     * Selecting a symbol activates its selection behavior.
+     *
+     * @param symbol color to display
+     * @return true if the symbol exists
+     */
+    public boolean placeSymbol(String symbol)
+    {
+<span class="fc" id="L191">        int pos = find(symbol);</span>
+    
+<span class="fc bfc" id="L193" title="All 2 branches covered.">        if(pos == -1){</span>
+<span class="fc" id="L194">            return false;</span>
+        }
+    
+<span class="fc" id="L197">        selectSymbol(pos);</span>
+<span class="fc" id="L198">        updateSymbolAppearance();</span>
+    
+<span class="fc" id="L200">        return true;</span>
+    }
+    
+    /**
+     * Selects a symbol as a consequence of a specialized wheel spin.
+     *
+     * This operation is available to Wheel subclasses so specialized
+     * spinning behavior can preserve symbol events without accessing
+     * the internal Symbol array.
+     *
+     * @param color color of the symbol to select
+     * @return true if the symbol exists
+     */
+    protected boolean placeSymbolBySpin(String color)
+    {
+<span class="fc" id="L215">        int pos = find(color);</span>
+    
+<span class="fc bfc" id="L217" title="All 2 branches covered.">        if(pos == -1){</span>
+<span class="fc" id="L218">            return false;</span>
+        }
+    
+<span class="fc" id="L221">        selectBySpin(pos);</span>
+<span class="fc" id="L222">        updateSymbolAppearance();</span>
+    
+<span class="fc" id="L224">        return true;</span>
+    }
+
+    // ── spin ─────────────────────────────────────────────────────────────────
+
+    /**
+     * Advances the wheel one position.
+     *
+     * The selected symbol receives the selection event and the
+     * spin event. Returns false if the wheel is locked or empty.
+     *
+     * @return true if the wheel moved
+     */
+    public boolean spin()
+    {
+<span class="fc bfc" id="L239" title="All 4 branches covered.">        if(symbols.length == 0 || locked){</span>
+<span class="fc" id="L240">            return false;</span>
+        }
+    
+<span class="fc" id="L243">        int nextSymbol = currentSymbol + 1;</span>
+    
+<span class="fc bfc" id="L245" title="All 2 branches covered.">        if(nextSymbol &gt;= symbols.length){</span>
+<span class="fc" id="L246">            nextSymbol = 0;</span>
+        }
+    
+<span class="fc" id="L249">        selectBySpin(nextSymbol);</span>
+<span class="fc" id="L250">        updateSymbolAppearance();</span>
+    
+<span class="fc bfc" id="L252" title="All 2 branches covered.">        if(visible){</span>
+<span class="fc" id="L253">            Canvas.getCanvas().wait(150);</span>
+        }
+    
+<span class="fc" id="L256">        return true;</span>
+    }
+    
+    /**
+     * Spins this wheel considering the wheel located immediately
+     * to its left.
+     *
+     * A normal wheel does not require information from its neighbor,
+     * therefore it preserves its regular spin behavior.
+     * Specialized wheels may override this operation.
+     *
+     * @param leftWheel wheel immediately to the left, or null if none exists
+     * @return true if the operation was successfully performed
+     */
+    public boolean spin(Wheel leftWheel)
+    {
+<span class="fc" id="L272">        return spin();</span>
+    }
+
+    // ── lock / unlock ─────────────────────────────────────────────────────────
+
+    /**
+     * Locks the wheel. Visual: circle turns gray, lock bar turns red.
+     */
+    public void lock()
+    {
+<span class="fc" id="L282">        locked = true;</span>
+<span class="pc bpc" id="L283" title="1 of 2 branches missed.">        if(visible){</span>
+<span class="nc" id="L284">            circle.changeColor(&quot;gray&quot;);</span>
+<span class="nc" id="L285">            lockBar.changeColor(&quot;red&quot;);</span>
+        }
+<span class="fc" id="L287">    }</span>
+
+    /**
+     * Unlocks the wheel so it can rotate again.
+     *
+     * The current symbol restores its own visual representation.
+     */
+    public void unlock()
+    {
+<span class="fc" id="L296">        locked = false;</span>
+    
+<span class="pc bpc" id="L298" title="1 of 2 branches missed.">        if(visible){</span>
+<span class="nc" id="L299">            lockBar.changeColor(&quot;green&quot;);</span>
+<span class="nc" id="L300">            updateSymbolAppearance();</span>
+        }
+<span class="fc" id="L302">    }</span>
+
+    /** Returns whether this wheel is currently locked. */
+<span class="fc" id="L305">    public boolean isLocked(){ return locked; }</span>
+
+    /**
+     * Indicates whether this wheel can be locked.
+     * Normal wheels allow this operation.
+     *
+     * @return true if the wheel can be locked
+     */
+    public boolean canBeLocked()
+    {
+<span class="fc" id="L315">        return true;</span>
+    }
+    
+    /**
+     * Indicates whether this wheel can be swapped.
+     * Normal wheels allow this operation.
+     *
+     * @return true if the wheel can be swapped
+     */
+    public boolean canBeSwapped()
+    {
+<span class="fc" id="L326">        return true;</span>
+    }
+    
+    /**
+     * Indicates whether this wheel can be deleted.
+     * Normal wheels allow this operation.
+     *
+     * @return true if the wheel can be deleted
+     */
+    public boolean canBeDeleted()
+    {
+<span class="fc" id="L337">        return true;</span>
+    }
+    
+    // ── query ─────────────────────────────────────────────────────────────────
+
+    /**
+     * Returns the currently visible symbol color,
+     * or null if the wheel is empty.
+     *
+     * @return current symbol color
+     */
+    public String configuration()
+    {
+<span class="fc bfc" id="L350" title="All 2 branches covered.">        if(symbols.length == 0)</span>
+        {
+<span class="fc" id="L352">            return null;</span>
+        }
+    
+<span class="fc" id="L355">        return symbols[currentSymbol].getColor();</span>
+    }
+    
+    /**
+     * Returns all symbol colors contained in this wheel.
+     *
+     * @return array with symbol colors
+     */
+    public String[] symbols()
+    {
+<span class="fc" id="L365">        String[] result = new String[symbols.length];</span>
+    
+<span class="fc bfc" id="L367" title="All 2 branches covered.">        for(int i = 0; i &lt; symbols.length; i++){</span>
+<span class="fc" id="L368">            result[i] = symbols[i].getColor();</span>
+        }
+    
+<span class="fc" id="L371">        return result;</span>
+    }
+
+    // ── visibility ────────────────────────────────────────────────────────────
+
+    /**
+     * Shows the visual elements of this wheel.
+     *
+     * The frame color identifies the wheel type.
+     * The current symbol preserves its own visual state.
+     */
+    public void makeVisible()
+    {
+<span class="fc" id="L384">        visible = true;</span>
+    
+<span class="fc" id="L386">        slotFrame.changeColor(frameColor());</span>
+<span class="fc" id="L387">        slotFrame.makeVisible();</span>
+    
+<span class="pc bpc" id="L389" title="1 of 2 branches missed.">        lockBar.changeColor(locked ? &quot;red&quot; : &quot;green&quot;);</span>
+<span class="fc" id="L390">        lockBar.makeVisible();</span>
+    
+<span class="fc" id="L392">        updateSymbolAppearance();</span>
+<span class="fc" id="L393">    }</span>
+
+    /**
+     * Hides all graphical elements of this wheel.
+     *
+     * Hiding the wheel does not modify the logical
+     * state of its currently selected symbol.
+     */
+    public void makeInvisible()
+    {
+<span class="fc" id="L403">        visible = false;</span>
+    
+<span class="fc" id="L405">        circle.makeInvisible();</span>
+<span class="fc" id="L406">        symbolMarker.makeInvisible();</span>
+    
+<span class="fc" id="L408">        lockBar.makeInvisible();</span>
+<span class="fc" id="L409">        slotFrame.makeInvisible();</span>
+<span class="fc" id="L410">    }</span>
+    
+    /**
+     * Returns the color used to identify this wheel type.
+     *
+     * Normal wheels use a white frame.
+     * Specialized wheels may override this operation.
+     *
+     * @return frame color
+     */
+    protected String frameColor()
+    {
+<span class="fc" id="L422">        return &quot;white&quot;;</span>
+    }
+    
+    /**
+     * Keeps the symbol circle centered when its diameter changes.
+     *
+     * The original 70-pixel circle position is used as reference.
+     *
+     * @param size new visual diameter of the symbol
+     */
+    private void centerSymbol(int size)
+    {
+<span class="fc" id="L434">        int newOffset = (70 - size) / 2;</span>
+<span class="fc" id="L435">        int movement = newOffset - circleOffset;</span>
+    
+<span class="fc" id="L437">        circle.moveHorizontal(movement);</span>
+<span class="fc" id="L438">        circle.moveVertical(movement);</span>
+    
+<span class="fc" id="L440">        circleOffset = newOffset;</span>
+<span class="fc" id="L441">    }</span>
+
+    // ── private helpers ───────────────────────────────────────────────────────
+
+<span class="fc bfc" id="L445" title="All 2 branches covered.">    private boolean contains(String color){ return find(color) != -1; }</span>
+
+    private int find(String color)
+    {
+<span class="fc bfc" id="L449" title="All 2 branches covered.">        for(int i = 0; i &lt; symbols.length; i++)</span>
+        {
+<span class="fc bfc" id="L451" title="All 2 branches covered.">            if(symbols[i].getColor().equals(color))</span>
+            {
+<span class="fc" id="L453">                return i;</span>
+            }
+        }
+    
+<span class="fc" id="L457">        return -1;</span>
+    }
+    
+    /**
+     * Creates a symbol according to the requested type.
+     *
+     * Available types are normal, ephemeral, shy and pulsing.
+     *
+     * @param type symbol type
+     * @param color symbol color
+     * @return created symbol, or null if the type is unavailable
+     */
+    private Symbol createSymbol(String type, String color)
+    {
+<span class="pc bpc" id="L471" title="1 of 2 branches missed.">        if(type == null){</span>
+<span class="nc" id="L472">            return null;</span>
+        }
+    
+<span class="fc bfc" id="L475" title="All 2 branches covered.">        if(type.equals(&quot;normal&quot;)){</span>
+<span class="fc" id="L476">            return new Symbol(color);</span>
+        }
+    
+<span class="fc bfc" id="L479" title="All 2 branches covered.">        if(type.equals(&quot;ephemeral&quot;)){</span>
+<span class="fc" id="L480">            return new EphemeralSymbol(color);</span>
+        }
+    
+<span class="fc bfc" id="L483" title="All 2 branches covered.">        if(type.equals(&quot;shy&quot;)){</span>
+<span class="fc" id="L484">            return new ShySymbol(color);</span>
+        }
+    
+<span class="fc bfc" id="L487" title="All 2 branches covered.">        if(type.equals(&quot;pulsing&quot;)){</span>
+<span class="fc" id="L488">            return new PulsingSymbol(color);</span>
+        }
+    
+<span class="fc" id="L491">        return null;</span>
+    }
+    
+    /**
+     * Synchronizes the visual representation of the current symbol.
+     *
+     * The circle represents the symbol's color, size and visibility.
+     * A separate marker identifies specialized symbol types.
+     */
+    private void updateSymbolAppearance()
+    {
+<span class="fc bfc" id="L502" title="All 2 branches covered.">        if(!visible){</span>
+<span class="fc" id="L503">            return;</span>
+        }
+    
+<span class="fc bfc" id="L506" title="All 2 branches covered.">        if(symbols.length == 0){</span>
+<span class="fc" id="L507">            centerSymbol(70);</span>
+<span class="fc" id="L508">            circle.changeSize(70);</span>
+<span class="pc bpc" id="L509" title="1 of 2 branches missed.">            circle.changeColor(locked ? &quot;gray&quot; : &quot;white&quot;);</span>
+<span class="fc" id="L510">            circle.makeVisible();</span>
+<span class="fc" id="L511">            symbolMarker.makeInvisible();</span>
+<span class="fc" id="L512">            return;</span>
+        }
+    
+<span class="fc" id="L515">        Symbol current = symbols[currentSymbol];</span>
+    
+<span class="fc" id="L517">        int size = current.getSize();</span>
+    
+<span class="fc" id="L519">        centerSymbol(size);</span>
+<span class="fc" id="L520">        circle.changeSize(size);</span>
+<span class="pc bpc" id="L521" title="1 of 2 branches missed.">        circle.changeColor(locked ? &quot;gray&quot; : current.getColor());</span>
+    
+<span class="pc bpc" id="L523" title="1 of 2 branches missed.">        if(current.isVisible()){</span>
+<span class="fc" id="L524">            circle.makeVisible();</span>
+        }
+        else{
+<span class="nc" id="L527">            circle.makeInvisible();</span>
+        }
+    
+<span class="pc bpc" id="L530" title="1 of 2 branches missed.">        if(current.hasMarker()){</span>
+<span class="nc" id="L531">            symbolMarker.changeColor(current.markerColor());</span>
+<span class="nc" id="L532">            symbolMarker.makeVisible();</span>
+        }
+        else{
+<span class="fc" id="L535">            symbolMarker.makeInvisible();</span>
+        }
+<span class="fc" id="L537">    }</span>
+    
+    /**
+     * Selects the symbol at the indicated position.
+     *
+     * Every selected symbol receives the selection event.
+     *
+     * @param position index of the symbol to select
+     */
+    private void selectSymbol(int position)
+    {
+<span class="fc" id="L548">        currentSymbol = position;</span>
+<span class="fc" id="L549">        symbols[currentSymbol].select();</span>
+<span class="fc" id="L550">    }</span>
+    
+    /**
+     * Selects a symbol as a consequence of a wheel spin.
+     *
+     * The symbol receives both the selection event and the spin event.
+     *
+     * @param position index of the symbol selected by the spin
+     */
+    private void selectBySpin(int position)
+    {
+<span class="fc" id="L561">        selectSymbol(position);</span>
+<span class="fc" id="L562">        symbols[currentSymbol].spin();</span>
+<span class="fc" id="L563">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>

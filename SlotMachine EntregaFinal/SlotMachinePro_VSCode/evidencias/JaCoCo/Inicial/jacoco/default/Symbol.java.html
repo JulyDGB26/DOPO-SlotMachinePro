@@ -1,0 +1,155 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Symbol.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">SlotMachinePro - Cierre Proyecto Inicial</a> &gt; <a href="index.source.html" class="el_package">default</a> &gt; <span class="el_source">Symbol.java</span></div><h1>Symbol.java</h1><pre class="source lang-java linenums">/**
+ * Represents a symbol used in a slot machine wheel.
+ *
+ * A normal symbol keeps its color, size and visibility unchanged
+ * when it is selected or when its wheel spins.
+ * Specialized symbols may override those reactions.
+ *
+ * @author Julian Gomez Boada
+ * @version Ciclo4-MC3
+ */
+public class Symbol
+{
+    private String color;
+
+    /**
+     * Default visual size of a symbol.
+     */
+    private static final int NORMAL_SIZE = 70;
+
+    /**
+     * Creates a normal symbol with the specified color.
+     *
+     * @param color visual color associated with the symbol
+     */
+    public Symbol(String color)
+<span class="fc" id="L26">    {</span>
+<span class="fc" id="L27">        this.color = color;</span>
+<span class="fc" id="L28">    }</span>
+
+    /**
+     * Returns the color of this symbol.
+     *
+     * @return symbol color
+     */
+    public String getColor()
+    {
+<span class="fc" id="L37">        return color;</span>
+    }
+
+    /**
+     * Reacts when this symbol is selected in its wheel.
+     *
+     * A normal symbol requires no special behavior.
+     * Specialized symbols may override this operation.
+     */
+    public void select()
+    {
+        // Normal symbols do not react to selection.
+<span class="fc" id="L49">    }</span>
+
+    /**
+     * Reacts when this symbol becomes selected as a consequence
+     * of a wheel spin.
+     *
+     * A normal symbol requires no special behavior.
+     * Specialized symbols may override this operation.
+     */
+    public void spin()
+    {
+        // Normal symbols do not react to a spin.
+<span class="fc" id="L61">    }</span>
+
+    /**
+     * Returns the size that must be used to represent this symbol.
+     *
+     * @return visual diameter of the symbol
+     */
+    public int getSize()
+    {
+<span class="fc" id="L70">        return NORMAL_SIZE;</span>
+    }
+
+    /**
+     * Indicates whether this symbol should currently be represented
+     * as visible.
+     *
+     * @return true for a normal symbol
+     */
+    public boolean isVisible()
+    {
+<span class="fc" id="L81">        return true;</span>
+    }
+    
+    /**
+     * Indicates whether this symbol requires a visual marker.
+     *
+     * Normal symbols do not require an additional marker.
+     * Specialized symbols may override this operation.
+     *
+     * @return false for a normal symbol
+     */
+    public boolean hasMarker()
+    {
+<span class="fc" id="L94">        return false;</span>
+    }
+    
+    /**
+     * Returns the color of the visual marker associated
+     * with this symbol.
+     *
+     * Normal symbols do not have a marker.
+     *
+     * @return marker color, or null when no marker is required
+     */
+    public String markerColor()
+    {
+<span class="fc" id="L107">        return null;</span>
+    }
+
+    /**
+     * Compares this symbol with another object.
+     * Two symbols are considered equal when they have the same color.
+     *
+     * @param obj object to compare with this symbol
+     * @return true if both objects represent the same symbol
+     */
+    @Override
+    public boolean equals(Object obj)
+    {
+<span class="nc bnc" id="L120" title="All 2 branches missed.">        if(this == obj){</span>
+<span class="nc" id="L121">            return true;</span>
+        }
+    
+        try{
+<span class="nc" id="L125">            Symbol other = (Symbol)obj;</span>
+<span class="nc" id="L126">            return color.equals(other.color);</span>
+        }
+<span class="nc" id="L128">        catch(ClassCastException e){</span>
+<span class="nc" id="L129">            return false;</span>
+        }
+    }
+
+    /**
+     * Returns the hash code of this symbol.
+     *
+     * @return hash code associated with this symbol
+     */
+    @Override
+    public int hashCode()
+    {
+<span class="nc" id="L141">        return color.hashCode();</span>
+    }
+
+    /**
+     * Returns a textual representation of this symbol.
+     *
+     * @return symbol color
+     */
+    @Override
+    public String toString()
+    {
+<span class="nc" id="L152">        return color;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.15.202606040825</span></div></body></html>
